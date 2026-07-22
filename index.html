@@ -111,6 +111,13 @@
   .cur-bar select { font-size: 14px; padding: 6px 8px; }
   .cur-bar input { width: 78px; font-size: 14px; padding: 6px 8px; text-align: center; }
   .cur-bar .rate-wrap { display: inline-flex; align-items: center; gap: 6px; }
+  .sync-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+  .sync-btn { font: inherit; font-size: 13px; font-weight: 650; cursor: pointer; color: #fff; background: linear-gradient(150deg, var(--accent), var(--accent-strong)); border: none; border-radius: 9px; padding: 9px 14px; display: inline-flex; align-items: center; gap: 6px; transition: filter .15s, opacity .15s; box-shadow: var(--shadow); }
+  .sync-btn:hover { filter: brightness(1.06); }
+  .sync-btn:disabled { opacity: .6; cursor: default; }
+  .sync-status { font-size: 12.5px; color: var(--ink-2); }
+  .sync-status.err { color: var(--bad); }
+  .sync-status.ok { color: var(--good); font-weight: 600; }
   .prod-toolbar { display: flex; justify-content: flex-end; margin-bottom: 10px; }
   .linkbtn { font: inherit; font-size: 12.5px; font-weight: 650; color: var(--accent-strong); background: transparent; border: none; cursor: pointer; padding: 5px 8px; border-radius: 7px; transition: .15s; }
   .linkbtn:hover { background: var(--surface-2); }
@@ -281,6 +288,10 @@
             <select id="costCurrency"><option value="ils">₪ שקל</option><option value="usd">$ דולר</option></select>
             <span id="rateWrap" class="rate-wrap">שער דולר: <input type="number" id="usdRate" value="3.7" min="0" step="0.01"> ₪ ל-$</span>
           </div>
+          <div class="sync-bar">
+            <button class="sync-btn" id="shopifyBtn">🔄 משוך מכירות משופיפי</button>
+            <span class="sync-status" id="shopifyStatus"></span>
+          </div>
           <div class="prod-toolbar" id="prodToolbar"><button class="linkbtn" id="collapseAllBtn">כווץ הכל</button></div>
           <div id="productsWrap"></div>
           <div class="prod-empty" id="prodEmpty">אין עדיין מוצרים — לחצו "הוסף מוצר" כדי להתחיל 👇</div>
@@ -321,7 +332,7 @@
   var PALETTE = ["#3b82f6","#ec4899","#10b981","#f59e0b","#8b5cf6","#ef4444","#06b6d4","#f97316","#84cc16","#e11d48","#0ea5e9","#d946ef"];
 
   var els = {};
-  ["costCurrency","usdRate","rateWrap","expenseList","expEmpty","addExpenseBtn","prodToolbar","collapseAllBtn","productsWrap","prodEmpty","addProductBtn",
+  ["costCurrency","usdRate","rateWrap","shopifyBtn","shopifyStatus","expenseList","expEmpty","addExpenseBtn","prodToolbar","collapseAllBtn","productsWrap","prodEmpty","addProductBtn",
    "breakdown","miniKpis","breakEvenNote","salesMonthLbl",
    "kpiRevenue","kpiOrders","kpiExpenses","kpiUnits","kpiProfit","kpiPerOrder","kpiMargin","kpiRoas","profitCard",
    "monthSelect","prevMonth","nextMonth","newMonthInput","addMonthBtn","delMonthBtn","summaryScroll"]
@@ -630,6 +641,42 @@
     d.append(l, v); return d;
   }
 
+  // ---------- Shopify sync ----------
+  function setSync(msg, cls) { els.shopifyStatus.textContent = msg; els.shopifyStatus.className = "sync-status" + (cls ? " " + cls : ""); }
+  function syncFromShopify() {
+    els.shopifyBtn.disabled = true;
+    setSync("מושך נתונים משופיפי…", "");
+    fetch("/api/shopify?month=" + encodeURIComponent(state.current), { headers: { "Accept": "application/json" } })
+      .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+      .then(function (res) {
+        if (!res.ok) { setSync("שגיאה: " + (res.d && res.d.error ? res.d.error : "לא ידועה"), "err"); return; }
+        var data = res.d;
+        if (!data.products || !data.products.length) { setSync("לא נמצאו מכירות בחודש " + monthLabel(state.current) + ".", ""); return; }
+        readActive();
+        var month = state.months[state.current];
+        var byName = {};
+        month.products.forEach(function (p) { byName[(p.name || "").trim()] = p; });
+        data.products.forEach(function (sp) {
+          var units = num(sp.units);
+          var per = units > 0 ? Math.round((num(sp.revenue) / units) * 100) / 100 : 0;
+          var syncedSale = { name: "מכירות מהחנות · " + monthLabel(state.current), units: 1, price: per, count: units, collapsed: true };
+          var existing = byName[(sp.name || "").trim()];
+          if (existing) { existing.sales = [syncedSale]; }
+          else {
+            var np = { id: newPid(), name: sp.name || "מוצר", cost: "", collapsed: false, sales: [syncedSale] };
+            month.products.push(np); byName[np.name.trim()] = np;
+          }
+        });
+        state.months[state.current] = month;
+        loadActiveIntoDOM(); renderActive(); renderSummary(); save();
+        setSync("סונכרנו " + data.products.length + " מוצרים · " + data.orderCount + " הזמנות. השלימו עלות לספק לכל מוצר.", "ok");
+      })
+      .catch(function () {
+        setSync("החיבור לשרת לא זמין. הסנכרון עובד רק בגרסה שפרוסה ל-Vercel עם טוקן שופיפי.", "err");
+      })
+      .then(function () { els.shopifyBtn.disabled = false; });
+  }
+
   // ---------- currency UI ----------
   function updateCurUI() { els.rateWrap.style.display = els.costCurrency.value === "usd" ? "" : "none"; }
 
@@ -748,6 +795,7 @@
   // ---------- wire up ----------
   els.costCurrency.addEventListener("change", function () { updateCurUI(); onEdit(); });
   els.usdRate.addEventListener("input", onEdit);
+  els.shopifyBtn.addEventListener("click", syncFromShopify);
   els.addExpenseBtn.addEventListener("click", function () { makeExpense(); onEdit(); });
   Array.prototype.forEach.call(document.querySelectorAll(".chip"), function (c) {
     c.addEventListener("click", function () { var pre = PRESETS[c.getAttribute("data-preset")]; makeExpense(pre ? { name: pre.name, amount: pre.amount, isPercent: pre.isPercent, cat: pre.cat } : null); onEdit(); });
