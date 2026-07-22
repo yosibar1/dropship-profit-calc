@@ -98,6 +98,13 @@
 
   .subhead { font-size: 11.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); margin: 4px 0 12px; }
 
+  .cur-bar { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; margin-bottom: 14px; padding: 10px 12px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; font-size: 12.5px; color: var(--ink-2); font-weight: 600; }
+  .cur-bar select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var(--line-2); border-radius: 8px; background: var(--surface); color: var(--ink); }
+  .cur-bar input { width: 78px; font-size: 14px; padding: 6px 8px; text-align: center; }
+  .cur-bar .rate-wrap { display: inline-flex; align-items: center; gap: 6px; }
+  .cost-hint { font-size: 11.5px; color: var(--ink-3); white-space: nowrap; flex: none; }
+  #productsWrap.cur-usd .input-money.sm::before { content: "$"; }
+
   /* Product blocks */
   .product-block { border: 1px solid var(--line); border-radius: 12px; margin-bottom: 14px; overflow: hidden; }
   .pb-head { display: flex; align-items: center; gap: 10px; padding: 11px 13px; background: var(--surface-2); border-bottom: 1px solid var(--line); flex-wrap: wrap; }
@@ -257,6 +264,11 @@
       <section class="card">
         <h2><span class="dot"></span>מוצרים ומכירות <span class="h2-note" id="salesMonthLbl"></span></h2>
         <div class="card-body">
+          <div class="cur-bar">
+            <span>עלות הספק במטבע:</span>
+            <select id="costCurrency"><option value="ils">₪ שקל</option><option value="usd">$ דולר</option></select>
+            <span id="rateWrap" class="rate-wrap">שער דולר: <input type="number" id="usdRate" value="3.7" min="0" step="0.01"> ₪ ל-$</span>
+          </div>
           <div id="productsWrap"></div>
           <button class="add-product" id="addProductBtn">＋ הוסף מוצר</button>
           <div class="note">
@@ -296,7 +308,7 @@
   var EXP_IDS = ["shopify","fixedOther","ads","feePct"];
 
   var els = {};
-  ["shopify","fixedOther","ads","feePct","productsWrap","addProductBtn","breakdown","miniKpis","breakEvenNote","salesMonthLbl",
+  ["shopify","fixedOther","ads","feePct","costCurrency","usdRate","rateWrap","productsWrap","addProductBtn","breakdown","miniKpis","breakEvenNote","salesMonthLbl",
    "kpiRevenue","kpiOrders","kpiExpenses","kpiUnits","kpiProfit","kpiPerOrder","kpiMargin","kpiRoas","profitCard",
    "monthSelect","prevMonth","nextMonth","newMonthInput","addMonthBtn","delMonthBtn","summaryScroll"]
     .forEach(function (id) { els[id] = document.getElementById(id); });
@@ -320,7 +332,8 @@
     });
     pidSeq = max;
   }
-  function defaultExpenses() { return { shopify: "130", fixedOther: "0", ads: "1500", feePct: "2.9" }; }
+  function defaultExpenses() { return { shopify: "130", fixedOther: "0", ads: "1500", feePct: "2.9", costCurrency: "ils", usdRate: "3.7" }; }
+  function costRate(s) { return (s && s.costCurrency === "usd") ? num(s.usdRate) : 1; }
   function seedSales() { return [{ units: 1, price: 0, count: 0 }, { units: 2, price: 0, count: 0 }, { units: 3, price: 0, count: 0 }]; }
   function defaultProducts() {
     return [
@@ -333,9 +346,10 @@
   // ---------- pure calc ----------
   function calcTotals(m) {
     var s = m.settings || {};
+    var rate = costRate(s);
     var revenue = 0, cogs = 0, orders = 0, units = 0;
     (m.products || []).forEach(function (p) {
-      var c = num(p.cost);
+      var c = num(p.cost) * rate;
       (p.sales || []).forEach(function (ln) {
         revenue += num(ln.price) * num(ln.count);
         cogs += c * num(ln.units) * num(ln.count);
@@ -392,7 +406,8 @@
     var costWrap = document.createElement("div"); costWrap.className = "input-money sm";
     var cost = document.createElement("input"); cost.type = "number"; cost.min = "0"; cost.step = "0.5"; cost.value = p.cost; cost.title = "עלות ליחידה לספק";
     cost.addEventListener("input", onEdit); costWrap.appendChild(cost);
-    costBox.append(costLbl, costWrap);
+    var costHint = document.createElement("span"); costHint.className = "cost-hint";
+    costBox.append(costLbl, costWrap, costHint);
     var del = document.createElement("button"); del.className = "prod-del"; del.textContent = "✕"; del.title = "מחק מוצר";
     del.addEventListener("click", function () {
       if (els.productsWrap.children.length <= 1) { alert("חייב להישאר לפחות מוצר אחד."); return; }
@@ -414,7 +429,7 @@
     var foot = document.createElement("div"); foot.className = "pb-foot";
 
     block.append(head, salesWrap, foot);
-    block._pref = { id: p.id, name: name, cost: cost, dot: dot, salesBody: tbody, foot: foot };
+    block._pref = { id: p.id, name: name, cost: cost, dot: dot, salesBody: tbody, foot: foot, costHint: costHint };
     els.productsWrap.appendChild(block);
     return block;
   }
@@ -427,6 +442,7 @@
   // ---------- read active from DOM ----------
   function readActive() {
     var s = {}; EXP_IDS.forEach(function (id) { s[id] = els[id].value; });
+    s.costCurrency = els.costCurrency.value; s.usdRate = els.usdRate.value;
     var products = [];
     Array.prototype.forEach.call(els.productsWrap.children, function (block) {
       var pr = block._pref;
@@ -444,6 +460,9 @@
   function loadActiveIntoDOM() {
     var m = state.months[state.current];
     EXP_IDS.forEach(function (id) { els[id].value = (m.settings[id] != null ? m.settings[id] : ""); });
+    els.costCurrency.value = m.settings.costCurrency || "ils";
+    els.usdRate.value = (m.settings.usdRate != null ? m.settings.usdRate : "3.7");
+    updateCurUI();
     els.productsWrap.innerHTML = "";
     (m.products && m.products.length ? m.products : defaultProducts()).forEach(function (p) { makeProductBlock(p); });
     refreshDots();
@@ -452,8 +471,12 @@
   // ---------- render ----------
   function renderActive() {
     var m = state.months[state.current];
+    var isUsd = els.costCurrency.value === "usd";
+    var rate = isUsd ? num(els.usdRate.value) : 1;
+    els.productsWrap.classList.toggle("cur-usd", isUsd);
     Array.prototype.forEach.call(els.productsWrap.children, function (block) {
-      var pr = block._pref; var pcost = num(pr.cost.value);
+      var pr = block._pref; var pcost = num(pr.cost.value) * rate;
+      pr.costHint.textContent = isUsd ? "≈ " + nis(pcost) + " ליח'" : "";
       var pRev = 0, pProf = 0, pUnits = 0;
       Array.prototype.forEach.call(pr.salesBody.children, function (tr) {
         var sr = tr._sref;
@@ -556,6 +579,9 @@
     d.append(l, v); return d;
   }
 
+  // ---------- currency UI ----------
+  function updateCurUI() { els.rateWrap.style.display = els.costCurrency.value === "usd" ? "" : "none"; }
+
   // ---------- edit handlers ----------
   function onEdit() { readActive(); renderActive(); renderSummary(); save(); }
   function onCatalogEdit() { refreshDots(); readActive(); renderActive(); renderSummary(); save(); }
@@ -568,6 +594,8 @@
     readActive();
     var carry = state.months[state.current];
     var s = {}; EXP_IDS.forEach(function (id) { s[id] = carry ? carry.settings[id] : defaultExpenses()[id]; });
+    s.costCurrency = carry ? (carry.settings.costCurrency || "ils") : "ils";
+    s.usdRate = carry ? (carry.settings.usdRate != null ? carry.settings.usdRate : "3.7") : "3.7";
     var products = (carry ? carry.products : defaultProducts()).map(function (p) {
       return { id: p.id, name: p.name, cost: p.cost, sales: (p.sales || []).map(function (ln) { return { units: ln.units, price: ln.price, count: 0 }; }) };
     });
@@ -612,7 +640,7 @@
         var months = {};
         Object.keys(srcMonths).forEach(function (mk) {
           var mm = srcMonths[mk]; var os = mm.settings || {};
-          var expenses = { shopify: os.shopify || "0", fixedOther: os.fixedOther || "0", ads: os.ads || "0", feePct: os.feePct || "0" };
+          var expenses = { shopify: os.shopify || "0", fixedOther: os.fixedOther || "0", ads: os.ads || "0", feePct: os.feePct || "0", costCurrency: os.costCurrency || "ils", usdRate: os.usdRate != null ? os.usdRate : "3.7" };
           var products;
           if (os.products) {
             // v3: flat rows referencing productId
@@ -655,6 +683,8 @@
 
   // ---------- wire up ----------
   EXP_IDS.forEach(function (id) { els[id].addEventListener("input", onEdit); });
+  els.costCurrency.addEventListener("change", function () { updateCurUI(); onEdit(); });
+  els.usdRate.addEventListener("input", onEdit);
   els.addProductBtn.addEventListener("click", addProduct);
   els.monthSelect.addEventListener("change", function () { switchMonth(els.monthSelect.value); });
   els.prevMonth.addEventListener("click", function () { var keys = sortedKeys(), i = keys.indexOf(state.current); if (i > 0) switchMonth(keys[i - 1]); });
