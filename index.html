@@ -83,38 +83,55 @@
   .card-body { padding: 14px 16px; }
 
   .field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
-  .field:last-child { margin-bottom: 0; }
   .field label { font-size: 12.5px; color: var(--ink-2); font-weight: 600; }
-  .field label .hint { color: var(--ink-3); font-weight: 400; }
-  .input-money { position: relative; display: flex; align-items: center; }
-  .input-money input { padding-inline-start: 30px; }
-  .input-money::before { content: "₪"; position: absolute; inset-inline-start: 11px; color: var(--ink-3); font-size: 14px; pointer-events: none; }
-  .input-money.sm { width: 104px; flex: none; }
-  .input-money.sm input { font-size: 14px; padding: 8px 8px 8px 25px; border-radius: 8px; }
-  .input-money.sm::before { font-size: 13px; inset-inline-start: 9px; }
-  input[type="text"], input[type="number"] { width: 100%; font: inherit; font-size: 14.5px; color: var(--ink); background: var(--surface); border: 1px solid var(--line-2); border-radius: 9px; padding: 9px 11px; transition: border-color .15s, box-shadow .15s; font-variant-numeric: tabular-nums; }
-  input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .input-money.sm { position: relative; display: flex; align-items: center; width: 104px; flex: none; }
+  .input-money.sm input { padding: 8px 8px 8px 25px; font-size: 14px; border-radius: 8px; width: 100%; }
+  .input-money.sm::before { content: "₪"; position: absolute; inset-inline-start: 9px; color: var(--ink-3); font-size: 13px; pointer-events: none; }
+  #productsWrap.cur-usd .input-money.sm::before { content: "$"; }
+  input[type="text"], input[type="number"], select { font: inherit; font-size: 14.5px; color: var(--ink); background: var(--surface); border: 1px solid var(--line-2); border-radius: 9px; padding: 9px 11px; transition: border-color .15s, box-shadow .15s; font-variant-numeric: tabular-nums; }
+  input[type="text"], input[type="number"] { width: 100%; }
+  input:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
   input[type=number]::-webkit-inner-spin-button { opacity: .4; }
 
-  .subhead { font-size: 11.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); margin: 4px 0 12px; }
+  /* Expenses list */
+  .exp-row { display: flex; align-items: center; gap: 7px; margin-bottom: 8px; }
+  .exp-row input.ename { flex: 1; min-width: 0; padding: 8px 10px; font-size: 14px; }
+  .exp-row input.eamount { width: 68px; flex: none; text-align: center; padding: 8px 6px; font-size: 14px; border-radius: 8px; }
+  .exp-row select.etype { width: 50px; flex: none; padding: 8px 4px; font-size: 14px; border-radius: 8px; text-align: center; }
+  .exp-del, .prod-del, .row-del { border: none; background: transparent; color: var(--ink-3); cursor: pointer; line-height: 1; border-radius: 7px; transition: .15s; }
+  .exp-del { font-size: 14px; padding: 6px 7px; flex: none; }
+  .exp-del:hover, .prod-del:hover, .row-del:hover { background: var(--bad-soft); color: var(--bad); }
+  .exp-empty { font-size: 12.5px; color: var(--ink-3); text-align: center; padding: 4px 0 12px; }
+  .add-mini { font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--accent-strong); background: transparent; border: 1px dashed var(--line-2); border-radius: 9px; padding: 8px; width: 100%; margin-top: 4px; transition: .15s; }
+  .add-mini:hover { background: var(--surface-2); border-color: var(--accent); }
+  .quick { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+  .quick span { font-size: 12px; color: var(--ink-3); align-self: center; }
+  .chip { font: inherit; font-size: 12.5px; cursor: pointer; color: var(--ink); background: var(--surface-3); border: 1px solid var(--line); border-radius: 20px; padding: 5px 11px; transition: .15s; }
+  .chip:hover { border-color: var(--accent); color: var(--accent-strong); }
 
-  .cur-bar { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; margin-bottom: 14px; padding: 10px 12px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; font-size: 12.5px; color: var(--ink-2); font-weight: 600; }
-  .cur-bar select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var(--line-2); border-radius: 8px; background: var(--surface); color: var(--ink); }
+  /* Currency bar + toolbar */
+  .cur-bar { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; margin-bottom: 12px; padding: 10px 12px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; font-size: 12.5px; color: var(--ink-2); font-weight: 600; }
+  .cur-bar select { font-size: 14px; padding: 6px 8px; }
   .cur-bar input { width: 78px; font-size: 14px; padding: 6px 8px; text-align: center; }
   .cur-bar .rate-wrap { display: inline-flex; align-items: center; gap: 6px; }
-  .cost-hint { font-size: 11.5px; color: var(--ink-3); white-space: nowrap; flex: none; }
-  #productsWrap.cur-usd .input-money.sm::before { content: "$"; }
+  .prod-toolbar { display: flex; justify-content: flex-end; margin-bottom: 10px; }
+  .linkbtn { font: inherit; font-size: 12.5px; font-weight: 650; color: var(--accent-strong); background: transparent; border: none; cursor: pointer; padding: 5px 8px; border-radius: 7px; transition: .15s; }
+  .linkbtn:hover { background: var(--surface-2); }
 
   /* Product blocks */
   .product-block { border: 1px solid var(--line); border-radius: 12px; margin-bottom: 14px; overflow: hidden; }
-  .pb-head { display: flex; align-items: center; gap: 10px; padding: 11px 13px; background: var(--surface-2); border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+  .pb-head { display: flex; align-items: center; gap: 9px; padding: 10px 12px; background: var(--surface-2); border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+  .pb-toggle { border: none; background: transparent; color: var(--ink-2); cursor: pointer; font-size: 12px; line-height: 1; padding: 5px 6px; border-radius: 6px; transition: transform .15s, background .15s; flex: none; }
+  .pb-toggle:hover { background: var(--surface-3); }
+  .product-block.collapsed .pb-toggle { transform: rotate(-90deg); }
+  .product-block.collapsed .pb-sales { display: none; }
   .prod-dot { width: 14px; height: 14px; border-radius: 50%; flex: none; border: 1px solid rgba(0,0,0,.14); }
-  .pb-head input.pname { flex: 1 1 130px; min-width: 110px; font-weight: 650; font-size: 15px; padding: 8px 10px; }
+  .pb-head input.pname { flex: 1 1 120px; min-width: 100px; font-weight: 650; font-size: 15px; padding: 8px 10px; }
   .pb-cost { display: flex; align-items: center; gap: 7px; }
   .pb-cost label { font-size: 12px; color: var(--ink-2); font-weight: 600; white-space: nowrap; }
-  .prod-del { border: none; background: transparent; color: var(--ink-3); cursor: pointer; font-size: 15px; line-height: 1; padding: 6px 8px; border-radius: 7px; transition: .15s; flex: none; }
-  .prod-del:hover { background: var(--bad-soft); color: var(--bad); }
-  .pb-sales { padding: 8px 13px 4px; }
+  .cost-hint { font-size: 11.5px; color: var(--ink-3); white-space: nowrap; flex: none; }
+  .prod-del { font-size: 15px; padding: 6px 8px; flex: none; }
+  .pb-sales { padding: 8px 12px 4px; }
   .table-scroll { overflow-x: auto; }
   table.sales2 { width: 100%; border-collapse: collapse; min-width: 400px; }
   table.sales2 th { font-size: 11.5px; color: var(--ink-2); font-weight: 700; text-align: center; padding: 7px 5px; border-bottom: 1px solid var(--line); white-space: nowrap; }
@@ -124,11 +141,10 @@
   .col-units { width: 78px; } .col-price { width: 92px; } .col-count { width: 84px; }
   .cell-calc { font-size: 13px; font-weight: 650; text-align: center; white-space: nowrap; }
   .cell-calc.pos { color: var(--good); } .cell-calc.neg { color: var(--bad); }
-  .row-del { border: none; background: transparent; color: var(--ink-3); cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 7px; border-radius: 7px; transition: .15s; }
-  .row-del:hover { background: var(--bad-soft); color: var(--bad); }
+  .row-del { font-size: 16px; padding: 4px 7px; }
   .add-sale { font: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer; color: var(--accent-strong); background: transparent; border: 1px dashed var(--line-2); border-radius: 8px; padding: 8px; width: 100%; margin: 6px 0 4px; transition: .15s; }
   .add-sale:hover { background: var(--surface-2); border-color: var(--accent); }
-  .pb-foot { padding: 9px 13px; border-top: 1px solid var(--line); background: var(--surface-2); font-size: 12.5px; color: var(--ink-2); display: flex; gap: 6px 16px; flex-wrap: wrap; }
+  .pb-foot { padding: 9px 12px; border-top: 1px solid var(--line); background: var(--surface-2); font-size: 12.5px; color: var(--ink-2); display: flex; gap: 6px 16px; flex-wrap: wrap; }
   .pb-foot b { color: var(--ink); font-weight: 700; }
   .pb-foot .pos { color: var(--good); } .pb-foot .neg { color: var(--bad); }
   .add-product { font: inherit; font-size: 13.5px; font-weight: 650; cursor: pointer; color: var(--accent-strong); background: transparent; border: 1px dashed var(--line-2); border-radius: 10px; padding: 12px; width: 100%; transition: .15s; }
@@ -157,7 +173,6 @@
   .month-card .mc-profit { font-size: 19px; font-weight: 780; margin-top: 5px; letter-spacing: -.01em; }
   .month-card .mc-sub { font-size: 11.5px; color: var(--ink-3); margin-top: 3px; }
   .month-card.totals { background: linear-gradient(150deg, var(--accent-soft), var(--surface-2)); cursor: default; border-color: var(--accent); }
-  .month-card.totals:hover { border-color: var(--accent); }
   .mc-profit.pos { color: var(--good); } .mc-profit.neg { color: var(--bad); }
 
   footer { margin-top: 26px; text-align: center; font-size: 12px; color: var(--ink-3); }
@@ -182,10 +197,8 @@
     .kpi { padding: 13px 13px; }
     .kpi .val { font-size: 22px; }
     .mini-kpis { grid-template-columns: 1fr; }
-    input[type="text"], input[type="number"] { font-size: 16px; }
+    input[type="text"], input[type="number"], select { font-size: 16px; }
     .pb-head input.pname { flex: 1 1 100%; }
-    .pb-cost { flex: 1 1 auto; }
-
     table.sales2 { min-width: 0; }
     table.sales2 thead { display: none; }
     table.sales2, table.sales2 tbody, table.sales2 tr, table.sales2 td { display: block; width: 100%; }
@@ -241,22 +254,17 @@
     <aside class="card">
       <h2><span class="dot"></span>הוצאות החודש</h2>
       <div class="card-body">
-        <div class="field">
-          <label>מנוי Shopify + אפליקציות</label>
-          <div class="input-money"><input type="number" id="shopify" value="130" min="0" step="1"></div>
+        <div id="expenseList"></div>
+        <div class="exp-empty" id="expEmpty">אין עדיין הוצאות — הוסיפו לפי הצורך 👇</div>
+        <button class="add-mini" id="addExpenseBtn">＋ הוסף הוצאה מותאמת</button>
+        <div class="quick">
+          <span>הוספה מהירה:</span>
+          <button class="chip" data-preset="shopify">Shopify</button>
+          <button class="chip" data-preset="ads">פרסום Meta</button>
+          <button class="chip" data-preset="fee">עמלת סליקה</button>
+          <button class="chip" data-preset="domain">דומיין</button>
         </div>
-        <div class="field">
-          <label>הוצאות קבועות נוספות <span class="hint">(דומיין וכו')</span></label>
-          <div class="input-money"><input type="number" id="fixedOther" value="0" min="0" step="1"></div>
-        </div>
-        <div class="field">
-          <label>תקציב פרסום – Meta Ads</label>
-          <div class="input-money"><input type="number" id="ads" value="1500" min="0" step="10"></div>
-        </div>
-        <div class="field">
-          <label>עמלת סליקה / עסקה <span class="hint">(% מההכנסה)</span></label>
-          <input type="number" id="feePct" value="2.9" min="0" step="0.1">
-        </div>
+        <div class="note">כל הוצאה: שם, סכום, ו-<b>₪</b> (סכום קבוע לחודש) או <b>%</b> (אחוז מההכנסה, למשל עמלת סליקה). מחיקה בכל עת.</div>
       </div>
     </aside>
 
@@ -269,10 +277,11 @@
             <select id="costCurrency"><option value="ils">₪ שקל</option><option value="usd">$ דולר</option></select>
             <span id="rateWrap" class="rate-wrap">שער דולר: <input type="number" id="usdRate" value="3.7" min="0" step="0.01"> ₪ ל-$</span>
           </div>
+          <div class="prod-toolbar"><button class="linkbtn" id="collapseAllBtn">כווץ הכל</button></div>
           <div id="productsWrap"></div>
           <button class="add-product" id="addProductBtn">＋ הוסף מוצר</button>
           <div class="note">
-            לכל מוצר מזינים <b>עלות לספק</b> (כמה אתה משלם ליחידה), ומתחת את סוגי המכירה: <b>יח' בעסקה</b> = כמה יחידות הלקוח קונה יחד (1 = בודד, 2/3 = מבצע), <b>מחיר לעסקה</b> = כמה שילם, ו<b>כמה נמכרו</b> = כמה עסקאות כאלה מכרת החודש.
+            לכל מוצר מזינים <b>עלות לספק</b> (כמה משלמים ליחידה), ומתחת את סוגי המכירה: <b>יח' בעסקה</b> = כמה יחידות הלקוח קונה יחד (1 = בודד, 2/3 = מבצע), <b>מחיר לעסקה</b> = כמה שילם, ו<b>כמה נמכרו</b> = כמה עסקאות כאלה מכרתם. חץ הקיפול ליד שם המוצר מסתיר/מציג את סוגי המכירה.
           </div>
         </div>
       </section>
@@ -301,14 +310,14 @@
 <script>
 (function () {
   "use strict";
-  var STORE_KEY = "noam-dropship-v4";
-  var OLD_KEYS = ["noam-dropship-v3", "noam-dropship-v2", "noam-dropship-v1"];
+  var STORE_KEY = "noam-dropship-v5";
+  var OLD_KEYS = ["noam-dropship-v4", "noam-dropship-v3", "noam-dropship-v2", "noam-dropship-v1"];
   var HEB_MONTHS = ["ינואר","פברואר","מרץ","אפריל","מאי","יוני","יולי","אוגוסט","ספטמבר","אוקטובר","נובמבר","דצמבר"];
   var PALETTE = ["#3b82f6","#ec4899","#10b981","#f59e0b","#8b5cf6","#ef4444","#06b6d4","#f97316","#84cc16","#e11d48","#0ea5e9","#d946ef"];
-  var EXP_IDS = ["shopify","fixedOther","ads","feePct"];
 
   var els = {};
-  ["shopify","fixedOther","ads","feePct","costCurrency","usdRate","rateWrap","productsWrap","addProductBtn","breakdown","miniKpis","breakEvenNote","salesMonthLbl",
+  ["costCurrency","usdRate","rateWrap","expenseList","expEmpty","addExpenseBtn","collapseAllBtn","productsWrap","addProductBtn",
+   "breakdown","miniKpis","breakEvenNote","salesMonthLbl",
    "kpiRevenue","kpiOrders","kpiExpenses","kpiUnits","kpiProfit","kpiPerOrder","kpiMargin","kpiRoas","profitCard",
    "monthSelect","prevMonth","nextMonth","newMonthInput","addMonthBtn","delMonthBtn","summaryScroll"]
     .forEach(function (id) { els[id] = document.getElementById(id); });
@@ -326,22 +335,26 @@
   function ensurePidSeq() {
     var max = 0;
     Object.keys(state.months).forEach(function (k) {
-      (state.months[k].products || []).forEach(function (p) {
-        var n = parseInt(String(p.id).replace(/\D/g, ""), 10); if (isFinite(n) && n > max) max = n;
-      });
+      (state.months[k].products || []).forEach(function (p) { var n = parseInt(String(p.id).replace(/\D/g, ""), 10); if (isFinite(n) && n > max) max = n; });
     });
     pidSeq = max;
   }
-  function defaultExpenses() { return { shopify: "130", fixedOther: "0", ads: "1500", feePct: "2.9", costCurrency: "ils", usdRate: "3.7" }; }
   function costRate(s) { return (s && s.costCurrency === "usd") ? num(s.usdRate) : 1; }
+  function defaultSettings() { return { costCurrency: "ils", usdRate: "3.7", expenses: [] }; }
   function seedSales() { return [{ units: 1, price: 0, count: 0 }, { units: 2, price: 0, count: 0 }, { units: 3, price: 0, count: 0 }]; }
   function defaultProducts() {
     return [
-      { id: "p1", name: "כחול", cost: "45", sales: [{ units: 1, price: 149, count: 20 }, { units: 2, price: 249, count: 8 }, { units: 3, price: 339, count: 3 }] },
-      { id: "p2", name: "ורוד", cost: "52", sales: [{ units: 1, price: 149, count: 12 }, { units: 2, price: 259, count: 4 }] }
+      { id: "p1", name: "כחול", cost: "45", collapsed: false, sales: [{ units: 1, price: 149, count: 20 }, { units: 2, price: 249, count: 8 }, { units: 3, price: 339, count: 3 }] },
+      { id: "p2", name: "ורוד", cost: "52", collapsed: false, sales: [{ units: 1, price: 149, count: 12 }, { units: 2, price: 259, count: 4 }] }
     ];
   }
-  function defaultMonth() { return { settings: defaultExpenses(), products: defaultProducts() }; }
+  function defaultMonth() { return { settings: defaultSettings(), products: defaultProducts() }; }
+  var PRESETS = {
+    shopify: { name: "מנוי Shopify", amount: "0", isPercent: false, cat: "other" },
+    ads: { name: "פרסום Meta Ads", amount: "0", isPercent: false, cat: "ads" },
+    fee: { name: "עמלת סליקה", amount: "2.9", isPercent: true, cat: "other" },
+    domain: { name: "דומיין", amount: "0", isPercent: false, cat: "other" }
+  };
 
   // ---------- pure calc ----------
   function calcTotals(m) {
@@ -357,18 +370,39 @@
         units += num(ln.units) * num(ln.count);
       });
     });
-    var fees = revenue * (num(s.feePct) / 100);
-    var ads = num(s.ads);
-    var fixed = num(s.shopify) + num(s.fixedOther);
-    var expenses = cogs + fees + ads + fixed;
+    var fixed = 0, pct = 0, adSpend = 0;
+    (s.expenses || []).forEach(function (e) {
+      var amt = num(e.amount);
+      if (e.isPercent) { pct += revenue * amt / 100; }
+      else { fixed += amt; if (e.cat === "ads") adSpend += amt; }
+    });
+    var expenses = cogs + fixed + pct;
     var profit = revenue - expenses;
     return {
-      revenue: revenue, cogs: cogs, fees: fees, ads: ads, fixed: fixed, expenses: expenses, profit: profit, orders: orders, units: units,
+      revenue: revenue, cogs: cogs, fixed: fixed, pct: pct, adSpend: adSpend, expenses: expenses, profit: profit, orders: orders, units: units,
       margin: revenue > 0 ? profit / revenue * 100 : 0,
       perOrder: orders > 0 ? profit / orders : 0,
       aov: orders > 0 ? revenue / orders : 0,
-      roas: ads > 0 ? revenue / ads : 0
+      roas: adSpend > 0 ? revenue / adSpend : 0
     };
+  }
+
+  // ---------- DOM: expense row ----------
+  function makeExpense(e) {
+    e = e || { name: "", amount: "0", isPercent: false, cat: "other" };
+    var row = document.createElement("div"); row.className = "exp-row";
+    var name = document.createElement("input"); name.type = "text"; name.className = "ename"; name.placeholder = "שם ההוצאה"; name.value = e.name || ""; name.addEventListener("input", onEdit);
+    var amt = document.createElement("input"); amt.type = "number"; amt.className = "eamount"; amt.min = "0"; amt.step = "0.01"; amt.value = e.amount; amt.addEventListener("input", onEdit);
+    var type = document.createElement("select"); type.className = "etype";
+    var o1 = document.createElement("option"); o1.value = "ils"; o1.textContent = "₪";
+    var o2 = document.createElement("option"); o2.value = "pct"; o2.textContent = "%";
+    type.append(o1, o2); type.value = e.isPercent ? "pct" : "ils"; type.addEventListener("change", onEdit);
+    var del = document.createElement("button"); del.className = "exp-del"; del.textContent = "✕"; del.title = "מחק הוצאה";
+    del.addEventListener("click", function () { row.parentNode.removeChild(row); onEdit(); });
+    row.append(name, amt, type, del);
+    row._eref = { name: name, amount: amt, type: type, cat: e.cat || "other" };
+    els.expenseList.appendChild(row);
+    return row;
   }
 
   // ---------- DOM: sale line ----------
@@ -394,18 +428,19 @@
 
   // ---------- DOM: product block ----------
   function makeProductBlock(p) {
-    p = p || { id: newPid(), name: "", cost: 0, sales: seedSales() };
-    var block = document.createElement("div"); block.className = "product-block";
+    p = p || { id: newPid(), name: "", cost: 0, collapsed: false, sales: seedSales() };
+    var block = document.createElement("div"); block.className = "product-block"; if (p.collapsed) block.classList.add("collapsed");
 
     var head = document.createElement("div"); head.className = "pb-head";
+    var toggle = document.createElement("button"); toggle.className = "pb-toggle"; toggle.textContent = "▾"; toggle.title = "קיפול / הרחבה";
+    toggle.addEventListener("click", function () { block.classList.toggle("collapsed"); onEdit(); });
     var dot = document.createElement("span"); dot.className = "prod-dot";
-    var name = document.createElement("input"); name.type = "text"; name.className = "pname"; name.placeholder = "שם המוצר"; name.value = p.name || "";
-    name.addEventListener("input", onEdit);
+    var name = document.createElement("input"); name.type = "text"; name.className = "pname"; name.placeholder = "שם המוצר"; name.value = p.name || ""; name.addEventListener("input", onEdit);
     var costBox = document.createElement("div"); costBox.className = "pb-cost";
     var costLbl = document.createElement("label"); costLbl.textContent = "עלות לספק";
     var costWrap = document.createElement("div"); costWrap.className = "input-money sm";
-    var cost = document.createElement("input"); cost.type = "number"; cost.min = "0"; cost.step = "0.5"; cost.value = p.cost; cost.title = "עלות ליחידה לספק";
-    cost.addEventListener("input", onEdit); costWrap.appendChild(cost);
+    var cost = document.createElement("input"); cost.type = "number"; cost.min = "0"; cost.step = "0.5"; cost.value = p.cost; cost.title = "עלות ליחידה לספק"; cost.addEventListener("input", onEdit);
+    costWrap.appendChild(cost);
     var costHint = document.createElement("span"); costHint.className = "cost-hint";
     costBox.append(costLbl, costWrap, costHint);
     var del = document.createElement("button"); del.className = "prod-del"; del.textContent = "✕"; del.title = "מחק מוצר";
@@ -413,7 +448,7 @@
       if (els.productsWrap.children.length <= 1) { alert("חייב להישאר לפחות מוצר אחד."); return; }
       block.parentNode.removeChild(block); onCatalogEdit();
     });
-    head.append(dot, name, costBox, del);
+    head.append(toggle, dot, name, costBox, del);
 
     var salesWrap = document.createElement("div"); salesWrap.className = "pb-sales";
     var scroll = document.createElement("div"); scroll.className = "table-scroll";
@@ -427,7 +462,6 @@
     salesWrap.appendChild(addSale);
 
     var foot = document.createElement("div"); foot.className = "pb-foot";
-
     block.append(head, salesWrap, foot);
     block._pref = { id: p.id, name: name, cost: cost, dot: dot, salesBody: tbody, foot: foot, costHint: costHint };
     els.productsWrap.appendChild(block);
@@ -435,14 +469,15 @@
   }
 
   function addProduct() { makeProductBlock(); onCatalogEdit(); }
-  function refreshDots() {
-    Array.prototype.forEach.call(els.productsWrap.children, function (block, i) { block._pref.dot.style.background = PALETTE[i % PALETTE.length]; });
-  }
+  function refreshDots() { Array.prototype.forEach.call(els.productsWrap.children, function (block, i) { block._pref.dot.style.background = PALETTE[i % PALETTE.length]; }); }
 
   // ---------- read active from DOM ----------
   function readActive() {
-    var s = {}; EXP_IDS.forEach(function (id) { s[id] = els[id].value; });
-    s.costCurrency = els.costCurrency.value; s.usdRate = els.usdRate.value;
+    var s = { costCurrency: els.costCurrency.value, usdRate: els.usdRate.value, expenses: [] };
+    Array.prototype.forEach.call(els.expenseList.children, function (row) {
+      var r = row._eref;
+      s.expenses.push({ name: r.name.value, amount: r.amount.value, isPercent: r.type.value === "pct", cat: r.cat });
+    });
     var products = [];
     Array.prototype.forEach.call(els.productsWrap.children, function (block) {
       var pr = block._pref;
@@ -451,7 +486,7 @@
         var sr = tr._sref;
         sales.push({ units: num(sr.units.value), price: num(sr.price.value), count: num(sr.count.value) });
       });
-      products.push({ id: pr.id, name: pr.name.value, cost: num(pr.cost.value), sales: sales });
+      products.push({ id: pr.id, name: pr.name.value, cost: num(pr.cost.value), collapsed: block.classList.contains("collapsed"), sales: sales });
     });
     state.months[state.current] = { settings: s, products: products };
   }
@@ -459,10 +494,11 @@
   // ---------- load active into DOM ----------
   function loadActiveIntoDOM() {
     var m = state.months[state.current];
-    EXP_IDS.forEach(function (id) { els[id].value = (m.settings[id] != null ? m.settings[id] : ""); });
     els.costCurrency.value = m.settings.costCurrency || "ils";
     els.usdRate.value = (m.settings.usdRate != null ? m.settings.usdRate : "3.7");
     updateCurUI();
+    els.expenseList.innerHTML = "";
+    (m.settings.expenses || []).forEach(function (e) { makeExpense(e); });
     els.productsWrap.innerHTML = "";
     (m.products && m.products.length ? m.products : defaultProducts()).forEach(function (p) { makeProductBlock(p); });
     refreshDots();
@@ -474,6 +510,8 @@
     var isUsd = els.costCurrency.value === "usd";
     var rate = isUsd ? num(els.usdRate.value) : 1;
     els.productsWrap.classList.toggle("cur-usd", isUsd);
+    els.expEmpty.style.display = els.expenseList.children.length ? "none" : "block";
+
     Array.prototype.forEach.call(els.productsWrap.children, function (block) {
       var pr = block._pref; var pcost = num(pr.cost.value) * rate;
       pr.costHint.textContent = isUsd ? "≈ " + nis(pcost) + " ליח'" : "";
@@ -483,14 +521,18 @@
         var rev = num(sr.price.value) * num(sr.count.value);
         var cost = pcost * num(sr.units.value) * num(sr.count.value);
         var prof = rev - cost;
-        sr.rev.textContent = nis(rev);
-        sr.prof.textContent = nis(prof);
+        sr.rev.textContent = nis(rev); sr.prof.textContent = nis(prof);
         sr.prof.classList.toggle("pos", prof > 0); sr.prof.classList.toggle("neg", prof < 0);
         pRev += rev; pProf += prof; pUnits += num(sr.units.value) * num(sr.count.value);
       });
       pr.foot.innerHTML = 'סה״כ מוצר: <b>' + pUnits.toLocaleString("he-IL") + '</b> יח\' · הכנסה <b>' + nis(pRev) +
         '</b> · רווח <b class="' + (pProf > 0 ? "pos" : (pProf < 0 ? "neg" : "")) + '">' + nis(pProf) + '</b>';
     });
+
+    // collapse-all label
+    var blocks = els.productsWrap.children;
+    var allCollapsed = blocks.length > 0 && Array.prototype.every.call(blocks, function (b) { return b.classList.contains("collapsed"); });
+    els.collapseAllBtn.textContent = allCollapsed ? "הרחב הכל" : "כווץ הכל";
 
     var t = calcTotals(m);
     els.salesMonthLbl.textContent = monthLabel(state.current);
@@ -503,33 +545,36 @@
     els.kpiPerOrder.textContent = nis(t.perOrder) + " רווח למכירה";
     els.kpiMargin.textContent = (t.revenue > 0 ? t.margin.toFixed(1) : "0") + "%";
     els.kpiMargin.classList.toggle("pos", t.profit > 0 && t.revenue > 0); els.kpiMargin.classList.toggle("neg", t.profit < 0);
-    els.kpiRoas.textContent = "ROAS: " + (t.ads > 0 ? t.roas.toFixed(2) + "×" : "—");
+    els.kpiRoas.textContent = "ROAS: " + (t.adSpend > 0 ? t.roas.toFixed(2) + "×" : "—");
     els.profitCard.classList.toggle("pos", t.profit > 0); els.profitCard.classList.toggle("neg", t.profit < 0);
 
     var b = els.breakdown; b.innerHTML = "";
     b.appendChild(brk("income", "הכנסות ממכירות", t.orders + " מכירות", t.revenue));
     b.appendChild(brk("cost", "עלות מוצרים לספק", "COGS · " + t.units + " יח'", -t.cogs));
-    b.appendChild(brk("cost", "עמלות סליקה", els.feePct.value + "% מההכנסה", -t.fees));
-    b.appendChild(brk("cost", "פרסום Meta Ads", "", -t.ads));
-    b.appendChild(brk("cost", "הוצאות קבועות", "Shopify + נוספות", -t.fixed));
+    (m.settings.expenses || []).forEach(function (e) {
+      var amt = e.isPercent ? t.revenue * num(e.amount) / 100 : num(e.amount);
+      b.appendChild(brk("cost", e.name || "הוצאה", e.isPercent ? num(e.amount) + "% מההכנסה" : "", -amt));
+    });
     b.appendChild(brk("total", "רווח נקי", "", t.profit, true));
+
     var mk = els.miniKpis; mk.innerHTML = "";
     mk.appendChild(mini("שולי רווח", (t.revenue > 0 ? t.margin.toFixed(1) : "0") + "%", t.profit));
-    mk.appendChild(mini("החזר על פרסום (ROAS)", t.ads > 0 ? t.roas.toFixed(2) + "×" : "—", t.roas >= 1 ? 1 : (t.ads > 0 ? -1 : 0)));
+    mk.appendChild(mini("החזר על פרסום (ROAS)", t.adSpend > 0 ? t.roas.toFixed(2) + "×" : "—", t.roas >= 1 ? 1 : (t.adSpend > 0 ? -1 : 0)));
     mk.appendChild(mini("רווח ליחידה", nis(t.units > 0 ? t.profit / t.units : 0), t.profit));
 
-    var grossPerUnit = t.units > 0 ? (t.revenue - t.cogs - t.fees) / t.units : 0;
-    var overhead = t.ads + t.fixed;
+    var grossPerUnit = t.units > 0 ? (t.revenue - t.cogs - t.pct) / t.units : 0;
+    var overhead = t.fixed;
     var note = els.breakEvenNote;
     if (t.units === 0 || grossPerUnit <= 0) {
-      note.textContent = "הזינו מכירות כדי לראות כמה יחידות צריך למכור כדי לכסות את הפרסום וההוצאות הקבועות.";
+      note.textContent = "הזינו מכירות והוצאות כדי לראות כמה יחידות צריך למכור כדי לכסות את ההוצאות הקבועות.";
+    } else if (overhead <= 0) {
+      note.textContent = "אין הוצאות קבועות — כל מכירה היא רווח (בניכוי עלות המוצר).";
     } else {
       var beUnits = Math.ceil(overhead / grossPerUnit);
       var moreNeeded = Math.max(0, beUnits - t.units);
       note.innerHTML = "נקודת איזון: צריך למכור כ־<b>" + beUnits.toLocaleString("he-IL") +
-        " יחידות</b> כדי לכסות פרסום והוצאות קבועות (" + nis(overhead) + "). " +
-        (t.profit >= 0 ? "החודש אתם מעל נקודת האיזון ברווח. 🎉"
-                       : "חסרות עוד כ־<b>" + moreNeeded.toLocaleString("he-IL") + " יחידות</b> כדי להגיע לאיזון.");
+        " יחידות</b> כדי לכסות את ההוצאות הקבועות (" + nis(overhead) + "). " +
+        (t.profit >= 0 ? "החודש אתם מעל נקודת האיזון ברווח. 🎉" : "חסרות עוד כ־<b>" + moreNeeded.toLocaleString("he-IL") + " יחידות</b> כדי להגיע לאיזון.");
     }
   }
 
@@ -593,11 +638,13 @@
     if (state.months[key]) { switchMonth(key); return; }
     readActive();
     var carry = state.months[state.current];
-    var s = {}; EXP_IDS.forEach(function (id) { s[id] = carry ? carry.settings[id] : defaultExpenses()[id]; });
-    s.costCurrency = carry ? (carry.settings.costCurrency || "ils") : "ils";
-    s.usdRate = carry ? (carry.settings.usdRate != null ? carry.settings.usdRate : "3.7") : "3.7";
+    var s = {
+      costCurrency: carry ? (carry.settings.costCurrency || "ils") : "ils",
+      usdRate: carry ? (carry.settings.usdRate != null ? carry.settings.usdRate : "3.7") : "3.7",
+      expenses: (carry ? carry.settings.expenses : []).map(function (e) { return { name: e.name, amount: e.amount, isPercent: e.isPercent, cat: e.cat }; })
+    };
     var products = (carry ? carry.products : defaultProducts()).map(function (p) {
-      return { id: p.id, name: p.name, cost: p.cost, sales: (p.sales || []).map(function (ln) { return { units: ln.units, price: ln.price, count: 0 }; }) };
+      return { id: p.id, name: p.name, cost: p.cost, collapsed: p.collapsed || false, sales: (p.sales || []).map(function (ln) { return { units: ln.units, price: ln.price, count: 0 }; }) };
     });
     state.months[key] = { settings: s, products: products };
     switchMonth(key);
@@ -628,6 +675,15 @@
     var k = curMonthKey(); state = { months: {}, current: k, theme: "" }; state.months[k] = defaultMonth(); ensurePidSeq();
   }
 
+  function expensesFromOld(os) {
+    var arr = [];
+    if (num(os.shopify) > 0) arr.push({ name: "מנוי Shopify", amount: String(os.shopify), isPercent: false, cat: "other" });
+    if (num(os.fixedOther) > 0) arr.push({ name: "הוצאות נוספות", amount: String(os.fixedOther), isPercent: false, cat: "other" });
+    if (num(os.ads) > 0) arr.push({ name: "פרסום Meta Ads", amount: String(os.ads), isPercent: false, cat: "ads" });
+    if (num(os.feePct) > 0) arr.push({ name: "עמלת סליקה", amount: String(os.feePct), isPercent: true, cat: "other" });
+    return arr;
+  }
+
   function migrateOld() {
     for (var i = 0; i < OLD_KEYS.length; i++) {
       var raw = null; try { raw = localStorage.getItem(OLD_KEYS[i]); } catch (e) {}
@@ -640,30 +696,31 @@
         var months = {};
         Object.keys(srcMonths).forEach(function (mk) {
           var mm = srcMonths[mk]; var os = mm.settings || {};
-          var expenses = { shopify: os.shopify || "0", fixedOther: os.fixedOther || "0", ads: os.ads || "0", feePct: os.feePct || "0", costCurrency: os.costCurrency || "ils", usdRate: os.usdRate != null ? os.usdRate : "3.7" };
+          var settings = { costCurrency: os.costCurrency || "ils", usdRate: os.usdRate != null ? os.usdRate : "3.7", expenses: expensesFromOld(os) };
           var products;
-          if (os.products) {
-            // v3: flat rows referencing productId
-            products = os.products.map(function (p) { return { id: p.id, name: p.name, cost: p.cost, sales: [] }; });
+          if (Array.isArray(mm.products)) {
+            // v4 nested
+            products = mm.products.map(function (p) { return { id: p.id, name: p.name, cost: p.cost, collapsed: false, sales: (p.sales && p.sales.length ? p.sales : seedSales()) }; });
+          } else if (os.products) {
+            // v3 flat rows
+            products = os.products.map(function (p) { return { id: p.id, name: p.name, cost: p.cost, collapsed: false, sales: [] }; });
             var byId = {}; products.forEach(function (p) { byId[p.id] = p; });
-            (mm.rows || []).forEach(function (r) {
-              var p = byId[r.productId] || products[0];
-              if (p) p.sales.push({ units: num(r.qty), price: num(r.price), count: num(r.orders) });
-            });
+            (mm.rows || []).forEach(function (r) { var p = byId[r.productId] || products[0]; if (p) p.sales.push({ units: num(r.qty), price: num(r.price), count: num(r.orders) }); });
+            products.forEach(function (p) { if (!p.sales.length) p.sales = seedSales(); });
           } else {
-            // v2/v1: two colors + rows with a/b
-            var p1 = { id: "p1", name: os.colorAName || "מוצר 1", cost: os.costA != null ? os.costA : "0", sales: [] };
-            var p2 = { id: "p2", name: os.colorBName || "מוצר 2", cost: os.costB != null ? os.costB : "0", sales: [] };
+            // v2/v1 colors
+            var p1 = { id: "p1", name: os.colorAName || "מוצר 1", cost: os.costA != null ? os.costA : "0", collapsed: false, sales: [] };
+            var p2 = { id: "p2", name: os.colorBName || "מוצר 2", cost: os.costB != null ? os.costB : "0", collapsed: false, sales: [] };
             (mm.rows || []).forEach(function (r) {
               var a = num(r.a), b = num(r.b);
               if (a > 0 && b > 0) p1.sales.push({ units: a + b, price: num(r.price), count: num(r.orders) });
               else if (b > 0) p2.sales.push({ units: b, price: num(r.price), count: num(r.orders) });
               else p1.sales.push({ units: a, price: num(r.price), count: num(r.orders) });
             });
+            [p1, p2].forEach(function (p) { if (!p.sales.length) p.sales = seedSales(); });
             products = [p1, p2];
           }
-          products.forEach(function (p) { if (!p.sales.length) p.sales = seedSales(); });
-          months[mk] = { settings: expenses, products: products };
+          months[mk] = { settings: settings, products: products };
         });
         if (!Object.keys(months).length) return false;
         state = { months: months, current: months[cur] ? cur : Object.keys(months).sort()[0], theme: theme || "" };
@@ -682,10 +739,19 @@
   }
 
   // ---------- wire up ----------
-  EXP_IDS.forEach(function (id) { els[id].addEventListener("input", onEdit); });
   els.costCurrency.addEventListener("change", function () { updateCurUI(); onEdit(); });
   els.usdRate.addEventListener("input", onEdit);
+  els.addExpenseBtn.addEventListener("click", function () { makeExpense(); onEdit(); });
+  Array.prototype.forEach.call(document.querySelectorAll(".chip"), function (c) {
+    c.addEventListener("click", function () { var pre = PRESETS[c.getAttribute("data-preset")]; makeExpense(pre ? { name: pre.name, amount: pre.amount, isPercent: pre.isPercent, cat: pre.cat } : null); onEdit(); });
+  });
   els.addProductBtn.addEventListener("click", addProduct);
+  els.collapseAllBtn.addEventListener("click", function () {
+    var blocks = els.productsWrap.children;
+    var anyOpen = Array.prototype.some.call(blocks, function (b) { return !b.classList.contains("collapsed"); });
+    Array.prototype.forEach.call(blocks, function (b) { b.classList.toggle("collapsed", anyOpen); });
+    onEdit();
+  });
   els.monthSelect.addEventListener("change", function () { switchMonth(els.monthSelect.value); });
   els.prevMonth.addEventListener("click", function () { var keys = sortedKeys(), i = keys.indexOf(state.current); if (i > 0) switchMonth(keys[i - 1]); });
   els.nextMonth.addEventListener("click", function () { var keys = sortedKeys(), i = keys.indexOf(state.current); if (i < keys.length - 1) switchMonth(keys[i + 1]); });
