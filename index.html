@@ -118,9 +118,9 @@
   /* Product blocks */
   .product-block { border: 1px solid var(--line); border-radius: 12px; margin-bottom: 14px; overflow: hidden; }
   .pb-head { display: flex; align-items: center; gap: 9px; padding: 10px 12px; background: var(--surface-2); border-bottom: 1px solid var(--line); flex-wrap: wrap; }
-  .pb-toggle { border: none; background: transparent; color: var(--ink-2); cursor: pointer; font-size: 12px; line-height: 1; padding: 5px 6px; border-radius: 6px; transition: transform .15s, background .15s; flex: none; }
-  .pb-toggle:hover { background: var(--surface-3); }
-  .product-block.collapsed .pb-toggle { transform: rotate(-90deg); }
+  .pb-toggle, .si-toggle { flex: none; width: 27px; height: 27px; display: inline-grid; place-items: center; border: 1px solid var(--line-2); background: var(--surface); color: var(--accent-strong); border-radius: 8px; cursor: pointer; font-size: 13px; line-height: 1; transition: transform .18s ease, background .15s, border-color .15s; }
+  .pb-toggle:hover, .si-toggle:hover { background: var(--accent-soft); border-color: var(--accent); }
+  .product-block.collapsed .pb-toggle, .sale-item.collapsed .si-toggle { transform: rotate(-90deg); background: var(--accent-soft); border-color: var(--accent); }
   .product-block.collapsed .pb-sales { display: none; }
   .prod-dot { width: 14px; height: 14px; border-radius: 50%; flex: none; border: 1px solid rgba(0,0,0,.14); }
   .pb-head input.pname { flex: 1 1 120px; min-width: 100px; font-weight: 650; font-size: 15px; padding: 8px 10px; }
@@ -135,9 +135,6 @@
   .sale-item { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
   .sale-item.collapsed { background: var(--surface-2); }
   .si-head { display: flex; align-items: center; gap: 8px; padding: 7px 9px; }
-  .si-toggle { border: none; background: transparent; color: var(--ink-2); cursor: pointer; font-size: 11px; line-height: 1; padding: 6px 7px; border-radius: 6px; transition: transform .15s, background .15s; flex: none; }
-  .si-toggle:hover { background: var(--surface-3); }
-  .sale-item.collapsed .si-toggle { transform: rotate(-90deg); }
   .si-name { flex: 1; min-width: 0; font-weight: 650; font-size: 14px; padding: 6px 8px; border: 1px solid transparent; background: transparent; border-radius: 7px; color: var(--ink); }
   .si-name::placeholder { color: var(--ink-3); font-weight: 500; }
   .si-name:hover { background: var(--surface-3); }
