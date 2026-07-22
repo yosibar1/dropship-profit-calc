@@ -1,0 +1,757 @@
+<title>מחשבון רווח – חנות דרופ שיפינג</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root {
+    --bg: #eef3f4; --surface: #ffffff; --surface-2: #f2f7f8; --surface-3: #e6eef0;
+    --ink: #10242a; --ink-2: #51686f; --ink-3: #7c9198; --line: #d6e2e5; --line-2: #c2d3d7;
+    --accent: #0aa6a0; --accent-strong: #087f7a; --accent-soft: #d5f0ee;
+    --good: #12854a; --good-soft: #d9f2e3; --bad: #d33a3a; --bad-soft: #fbe0e0;
+    --warn: #a86412; --warn-soft: #f8ecd4;
+    --shadow: 0 1px 2px rgba(16,36,42,.06), 0 8px 24px -12px rgba(16,36,42,.18);
+    --radius: 14px;
+    --font: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0a1417; --surface: #0f2025; --surface-2: #132a30; --surface-3: #17323a;
+      --ink: #e8f3f4; --ink-2: #9db4bb; --ink-3: #6c868e; --line: #21414a; --line-2: #2c525c;
+      --accent: #2bd0c6; --accent-strong: #52ddd4; --accent-soft: #123a3a;
+      --good: #46d287; --good-soft: #10331f; --bad: #f07575; --bad-soft: #3a1616;
+      --warn: #e0aa4e; --warn-soft: #33260f;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px -14px rgba(0,0,0,.6);
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #eef3f4; --surface: #ffffff; --surface-2: #f2f7f8; --surface-3: #e6eef0;
+    --ink: #10242a; --ink-2: #51686f; --ink-3: #7c9198; --line: #d6e2e5; --line-2: #c2d3d7;
+    --accent: #0aa6a0; --accent-strong: #087f7a; --accent-soft: #d5f0ee;
+    --good: #12854a; --good-soft: #d9f2e3; --bad: #d33a3a; --bad-soft: #fbe0e0;
+    --warn: #a86412; --warn-soft: #f8ecd4;
+    --shadow: 0 1px 2px rgba(16,36,42,.06), 0 8px 24px -12px rgba(16,36,42,.18);
+  }
+  :root[data-theme="dark"] {
+    --bg: #0a1417; --surface: #0f2025; --surface-2: #132a30; --surface-3: #17323a;
+    --ink: #e8f3f4; --ink-2: #9db4bb; --ink-3: #6c868e; --line: #21414a; --line-2: #2c525c;
+    --accent: #2bd0c6; --accent-strong: #52ddd4; --accent-soft: #123a3a;
+    --good: #46d287; --good-soft: #10331f; --bad: #f07575; --bad-soft: #3a1616;
+    --warn: #e0aa4e; --warn-soft: #33260f;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px -14px rgba(0,0,0,.6);
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; direction: rtl; background: var(--bg); color: var(--ink);
+    font-family: var(--font); line-height: 1.5; font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 22px 18px 80px; }
+
+  header {
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    padding-bottom: 18px; margin-bottom: 18px; border-bottom: 1px solid var(--line);
+  }
+  .logo {
+    width: 46px; height: 46px; border-radius: 12px; flex: none;
+    background: linear-gradient(150deg, var(--accent), var(--accent-strong));
+    display: grid; place-items: center; font-size: 24px; box-shadow: var(--shadow);
+  }
+  .title-block h1 { margin: 0; font-size: 21px; font-weight: 700; letter-spacing: -.01em; }
+  .title-block p { margin: 2px 0 0; font-size: 13px; color: var(--ink-2); }
+  .head-actions { margin-inline-start: auto; display: flex; gap: 8px; }
+  .ghost-btn {
+    font: inherit; font-size: 13px; cursor: pointer; color: var(--ink-2);
+    background: var(--surface); border: 1px solid var(--line); border-radius: 9px;
+    padding: 8px 12px; display: inline-flex; align-items: center; gap: 6px;
+    transition: border-color .15s, color .15s; white-space: nowrap;
+  }
+  .ghost-btn:hover { border-color: var(--line-2); color: var(--ink); }
+  .ghost-btn.danger:hover { border-color: var(--bad); color: var(--bad); }
+
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+
+  .monthbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 12px 14px; margin-bottom: 16px; }
+  .mb-left, .mb-right { display: flex; align-items: center; gap: 8px; }
+  .mb-label { font-size: 12.5px; color: var(--ink-2); font-weight: 600; }
+  .nav-arrow {
+    font: inherit; font-size: 16px; line-height: 1; cursor: pointer; color: var(--ink-2);
+    background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px;
+    width: 32px; height: 34px; display: grid; place-items: center; transition: .15s;
+  }
+  .nav-arrow:hover:not(:disabled) { border-color: var(--accent); color: var(--accent-strong); }
+  .nav-arrow:disabled { opacity: .4; cursor: default; }
+  .month-select, .month-input {
+    font: inherit; font-size: 14.5px; font-weight: 650; color: var(--ink);
+    background: var(--surface); border: 1px solid var(--line-2); border-radius: 9px; padding: 8px 11px; min-width: 150px;
+  }
+  .month-input { min-width: 0; font-weight: 500; color: var(--ink-2); }
+  .month-select:focus, .month-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 22px; }
+  .kpi { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 15px 16px; box-shadow: var(--shadow); position: relative; overflow: hidden; }
+  .kpi .label { font-size: 12.5px; color: var(--ink-2); font-weight: 600; letter-spacing: .01em; }
+  .kpi .val { font-size: 27px; font-weight: 750; margin-top: 6px; letter-spacing: -.02em; line-height: 1.1; }
+  .kpi .sub { font-size: 12px; color: var(--ink-3); margin-top: 4px; }
+  .kpi.profit::before { content: ""; position: absolute; inset-inline-start: 0; top: 0; bottom: 0; width: 4px; background: var(--accent); }
+  .kpi.profit.pos::before { background: var(--good); }
+  .kpi.profit.neg::before { background: var(--bad); }
+  .val.pos { color: var(--good); } .val.neg { color: var(--bad); }
+
+  .grid { display: grid; grid-template-columns: 340px 1fr; gap: 18px; align-items: start; }
+  .card > h2 { margin: 0; font-size: 14px; font-weight: 700; padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 8px; background: var(--surface-2); }
+  .card > h2 .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex: none; }
+  .card > h2 .h2-note { margin-inline-start: auto; font-weight: 500; font-size: 12px; color: var(--ink-3); }
+  .card-body { padding: 14px 16px; }
+
+  .field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+  .field:last-child { margin-bottom: 0; }
+  .field label { font-size: 12.5px; color: var(--ink-2); font-weight: 600; }
+  .field label .hint { color: var(--ink-3); font-weight: 400; }
+  .input-money { position: relative; display: flex; align-items: center; }
+  .input-money input { padding-inline-start: 30px; }
+  .input-money::before { content: "₪"; position: absolute; inset-inline-start: 11px; color: var(--ink-3); font-size: 14px; pointer-events: none; }
+  .input-money.sm { width: 108px; flex: none; }
+  .input-money.sm input { font-size: 14px; padding: 7px 8px 7px 25px; }
+  .input-money.sm::before { font-size: 13px; inset-inline-start: 9px; }
+  input[type="text"], input[type="number"] {
+    width: 100%; font: inherit; font-size: 14.5px; color: var(--ink);
+    background: var(--surface); border: 1px solid var(--line-2); border-radius: 9px; padding: 9px 11px;
+    transition: border-color .15s, box-shadow .15s; font-variant-numeric: tabular-nums;
+  }
+  input:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  input[type=number]::-webkit-inner-spin-button { opacity: .4; }
+
+  .subhead { font-size: 11.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); margin: 4px 0 12px; }
+  .divider { height: 1px; background: var(--line); margin: 18px -16px; }
+
+  /* Product catalog */
+  .prod-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .prod-dot { width: 12px; height: 12px; border-radius: 50%; flex: none; border: 1px solid rgba(0,0,0,.12); }
+  .prod-row input.pname { flex: 1; min-width: 0; padding: 8px 10px; font-size: 14px; }
+  .prod-row .input-money.sm input { border-radius: 8px; }
+  .prod-del { border: none; background: transparent; color: var(--ink-3); cursor: pointer; font-size: 15px; line-height: 1; padding: 4px 6px; border-radius: 7px; transition: .15s; flex: none; }
+  .prod-del:hover { background: var(--bad-soft); color: var(--bad); }
+  .add-mini {
+    font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--accent-strong);
+    background: transparent; border: 1px dashed var(--line-2); border-radius: 9px; padding: 8px; width: 100%; margin-top: 6px; transition: .15s;
+  }
+  .add-mini:hover { background: var(--surface-2); border-color: var(--accent); }
+
+  .table-scroll { overflow-x: auto; }
+  table.sales { width: 100%; border-collapse: collapse; min-width: 640px; }
+  table.sales th { font-size: 11.5px; color: var(--ink-2); font-weight: 700; text-align: center; padding: 9px 6px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  table.sales th.desc-col, table.sales td.desc-col { text-align: start; }
+  table.sales td { padding: 6px 6px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  table.sales tr:last-child td { border-bottom: none; }
+  table.sales input { padding: 7px 8px; font-size: 14px; text-align: center; border-radius: 8px; }
+  table.sales input.desc { text-align: start; }
+  select.prod-select {
+    width: 100%; min-width: 128px; font: inherit; font-size: 14px; color: var(--ink);
+    background: var(--surface); border: 1px solid var(--line-2); border-radius: 8px; padding: 7px 8px;
+  }
+  .col-prod { width: 150px; }
+  .col-num { width: 70px; }
+  .col-price { width: 96px; }
+  .cell-calc { font-size: 13px; font-weight: 650; text-align: center; white-space: nowrap; }
+  .cell-calc.pos { color: var(--good); } .cell-calc.neg { color: var(--bad); }
+  .row-del { border: none; background: transparent; color: var(--ink-3); cursor: pointer; font-size: 17px; line-height: 1; padding: 4px 7px; border-radius: 7px; transition: .15s; }
+  .row-del:hover { background: var(--bad-soft); color: var(--bad); }
+  .add-row { font: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer; color: var(--accent-strong); background: transparent; border: 1px dashed var(--line-2); border-radius: 9px; padding: 10px; width: 100%; margin-top: 12px; transition: .15s; }
+  .add-row:hover { background: var(--surface-2); border-color: var(--accent); }
+  .quick { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+  .quick span { font-size: 12px; color: var(--ink-3); align-self: center; }
+  .chip { font: inherit; font-size: 12.5px; cursor: pointer; color: var(--ink); background: var(--surface-3); border: 1px solid var(--line); border-radius: 20px; padding: 5px 11px; transition: .15s; }
+  .chip:hover { border-color: var(--accent); color: var(--accent-strong); }
+
+  .brk-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 9px 0; border-bottom: 1px dashed var(--line); }
+  .brk-row .lbl { font-size: 14px; color: var(--ink); }
+  .brk-row .lbl small { color: var(--ink-3); font-size: 12px; margin-inline-start: 6px; }
+  .brk-row .num { font-size: 14.5px; font-weight: 650; white-space: nowrap; }
+  .brk-row.income .num { color: var(--good); } .brk-row.cost .num { color: var(--bad); }
+  .brk-row.total { border-bottom: none; border-top: 2px solid var(--line-2); margin-top: 4px; padding-top: 13px; }
+  .brk-row.total .lbl { font-weight: 750; font-size: 16px; }
+  .brk-row.total .num { font-size: 20px; font-weight: 800; }
+  .mini-kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 16px; }
+  .mini { background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 11px 12px; }
+  .mini .label { font-size: 11.5px; color: var(--ink-2); font-weight: 600; }
+  .mini .val { font-size: 18px; font-weight: 750; margin-top: 3px; }
+  .note { margin-top: 14px; font-size: 12.5px; color: var(--ink-2); background: var(--surface-2); border: 1px solid var(--line); border-inline-start: 3px solid var(--accent); border-radius: 8px; padding: 10px 12px; line-height: 1.55; }
+  .empty { text-align: center; color: var(--ink-3); font-size: 13.5px; padding: 20px; }
+
+  .summary { margin-top: 22px; }
+  .summary-scroll { display: flex; gap: 10px; overflow-x: auto; padding: 2px 0 4px; }
+  .month-card { flex: 0 0 auto; min-width: 128px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 11px; padding: 12px 13px; cursor: pointer; transition: .15s; }
+  .month-card:hover { border-color: var(--line-2); }
+  .month-card.active { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); background: var(--surface); }
+  .month-card .mc-name { font-size: 12.5px; color: var(--ink-2); font-weight: 650; }
+  .month-card .mc-profit { font-size: 19px; font-weight: 780; margin-top: 5px; letter-spacing: -.01em; }
+  .month-card .mc-sub { font-size: 11.5px; color: var(--ink-3); margin-top: 3px; }
+  .month-card.totals { background: linear-gradient(150deg, var(--accent-soft), var(--surface-2)); cursor: default; border-color: var(--accent); }
+  .month-card.totals:hover { border-color: var(--accent); }
+  .mc-profit.pos { color: var(--good); } .mc-profit.neg { color: var(--bad); }
+
+  footer { margin-top: 26px; text-align: center; font-size: 12px; color: var(--ink-3); }
+
+  @media (max-width: 860px) {
+    .grid { grid-template-columns: 1fr; }
+    .kpis { grid-template-columns: 1fr 1fr; }
+    .monthbar { justify-content: flex-start; }
+  }
+  @media (max-width: 460px) { .kpi .val { font-size: 23px; } .mini-kpis { grid-template-columns: 1fr; } }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="logo">📦</div>
+    <div class="title-block">
+      <h1>מחשבון רווח – חנות דרופ שיפינג</h1>
+      <p>מעקב הכנסות, הוצאות ורווח חודשי לכל מוצר · נשמר בדפדפן</p>
+    </div>
+    <div class="head-actions">
+      <button class="ghost-btn" id="themeBtn" title="החלף מצב תצוגה">🌙 <span>כהה</span></button>
+      <button class="ghost-btn danger" id="resetBtn" title="אפס הכל">↺ איפוס</button>
+    </div>
+  </header>
+
+  <section class="monthbar card">
+    <div class="mb-left">
+      <span class="mb-label">חודש פעיל:</span>
+      <button class="nav-arrow" id="prevMonth" title="חודש מוקדם יותר">›</button>
+      <select id="monthSelect" class="month-select"></select>
+      <button class="nav-arrow" id="nextMonth" title="חודש מאוחר יותר">‹</button>
+    </div>
+    <div class="mb-right">
+      <input type="month" id="newMonthInput" class="month-input">
+      <button class="ghost-btn" id="addMonthBtn">＋ הוסף חודש</button>
+      <button class="ghost-btn danger" id="delMonthBtn" title="מחק את החודש הפעיל">🗑</button>
+    </div>
+  </section>
+
+  <section class="kpis" id="kpis">
+    <div class="kpi"><div class="label">הכנסות בחודש</div><div class="val" id="kpiRevenue">₪0</div><div class="sub" id="kpiOrders">0 הזמנות</div></div>
+    <div class="kpi"><div class="label">הוצאות בחודש</div><div class="val" id="kpiExpenses">₪0</div><div class="sub" id="kpiUnits">0 יחידות נמכרו</div></div>
+    <div class="kpi profit" id="profitCard"><div class="label">רווח נקי בחודש</div><div class="val" id="kpiProfit">₪0</div><div class="sub" id="kpiPerOrder">₪0 רווח להזמנה</div></div>
+    <div class="kpi"><div class="label">שולי רווח</div><div class="val" id="kpiMargin">0%</div><div class="sub" id="kpiRoas">ROAS: —</div></div>
+  </section>
+
+  <div class="grid">
+    <aside class="card">
+      <h2><span class="dot"></span>מוצרים והוצאות</h2>
+      <div class="card-body">
+        <div class="subhead">קטלוג מוצרים · עלות לספק ליחידה</div>
+        <div id="productList"></div>
+        <button class="add-mini" id="addProductBtn">＋ הוסף מוצר</button>
+
+        <div class="divider"></div>
+        <div class="subhead">הוצאות החודש</div>
+        <div class="field">
+          <label>מנוי Shopify + אפליקציות</label>
+          <div class="input-money"><input type="number" id="shopify" value="130" min="0" step="1"></div>
+        </div>
+        <div class="field">
+          <label>הוצאות קבועות נוספות <span class="hint">(דומיין וכו')</span></label>
+          <div class="input-money"><input type="number" id="fixedOther" value="0" min="0" step="1"></div>
+        </div>
+        <div class="field">
+          <label>תקציב פרסום – Meta Ads</label>
+          <div class="input-money"><input type="number" id="ads" value="1500" min="0" step="10"></div>
+        </div>
+        <div class="field">
+          <label>עמלת סליקה / עסקה <span class="hint">(% מההכנסה)</span></label>
+          <input type="number" id="feePct" value="2.9" min="0" step="0.1">
+        </div>
+      </div>
+    </aside>
+
+    <main style="display:flex; flex-direction:column; gap:18px;">
+      <section class="card">
+        <h2><span class="dot"></span>מכירות <span class="h2-note" id="salesMonthLbl"></span></h2>
+        <div class="card-body">
+          <div class="table-scroll">
+            <table class="sales">
+              <thead>
+                <tr>
+                  <th class="desc-col">תיאור</th>
+                  <th class="col-prod">מוצר</th>
+                  <th class="col-num">כמות</th>
+                  <th class="col-price">מחיר להזמנה</th>
+                  <th class="col-num">מס' הזמנות</th>
+                  <th>הכנסה</th>
+                  <th>רווח גולמי</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="salesBody"></tbody>
+            </table>
+          </div>
+          <button class="add-row" id="addRow">＋ הוסף שורת מכירה</button>
+          <div class="quick">
+            <span>הוספה מהירה:</span>
+            <button class="chip" data-qty="1">יחידה בודדת</button>
+            <button class="chip" data-qty="2">מבצע 2 יחידות</button>
+            <button class="chip" data-qty="3">מבצע 3 יחידות</button>
+          </div>
+          <div class="note">
+            כל שורה = קבוצת הזמנות זהות. בוחרים <b>מוצר</b>, מזינים <b>כמות</b> (כמה יחידות מהמוצר בהזמנה אחת — למבצע 2/3 הזינו 2 או 3), את <b>המחיר הכולל</b> שהלקוח שילם על ההזמנה (כולל הנחת מבצע), וכמה הזמנות כאלה היו. הזמנה עם כמה מוצרים שונים? מוסיפים שורה לכל מוצר.
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2><span class="dot"></span>פירוט חישוב הרווח</h2>
+        <div class="card-body">
+          <div id="breakdown"></div>
+          <div class="mini-kpis" id="miniKpis"></div>
+          <div class="note" id="breakEvenNote"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <section class="card summary">
+    <h2><span class="dot"></span>סיכום חודשי — השוואה <span class="h2-note">לחצו על חודש כדי לעבור אליו</span></h2>
+    <div class="card-body">
+      <div class="summary-scroll" id="summaryScroll"></div>
+    </div>
+  </section>
+
+  <footer>הנתונים נשמרים מקומית בדפדפן שלך בלבד</footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var STORE_KEY = "noam-dropship-v3";
+  var OLD_KEYS = ["noam-dropship-v2", "noam-dropship-v1"];
+  var HEB_MONTHS = ["ינואר","פברואר","מרץ","אפריל","מאי","יוני","יולי","אוגוסט","ספטמבר","אוקטובר","נובמבר","דצמבר"];
+  var PALETTE = ["#3b82f6","#ec4899","#10b981","#f59e0b","#8b5cf6","#ef4444","#06b6d4","#f97316","#84cc16","#e11d48","#0ea5e9","#d946ef"];
+  var EXP_IDS = ["shopify","fixedOther","ads","feePct"];
+
+  var els = {};
+  ["shopify","fixedOther","ads","feePct","productList","addProductBtn","salesBody","breakdown","miniKpis","breakEvenNote","salesMonthLbl",
+   "kpiRevenue","kpiOrders","kpiExpenses","kpiUnits","kpiProfit","kpiPerOrder","kpiMargin","kpiRoas","profitCard",
+   "monthSelect","prevMonth","nextMonth","newMonthInput","addMonthBtn","delMonthBtn","summaryScroll"]
+    .forEach(function (id) { els[id] = document.getElementById(id); });
+
+  var state = { months: {}, current: null, theme: "" };
+  var pidSeq = 0;
+
+  // ---------- helpers ----------
+  function nis(n) { if (!isFinite(n)) n = 0; var neg = n < 0; return (neg ? "-" : "") + "₪" + Math.round(Math.abs(n)).toLocaleString("he-IL"); }
+  function num(v) { var n = parseFloat(v); return isFinite(n) ? n : 0; }
+  function curMonthKey() { var d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0"); }
+  function monthLabel(key) { var p = key.split("-"); return HEB_MONTHS[parseInt(p[1], 10) - 1] + " " + p[0]; }
+  function sortedKeys() { return Object.keys(state.months).sort(); }
+  function newPid() { pidSeq++; return "p" + pidSeq; }
+  function ensurePidSeq() {
+    var max = 0;
+    Object.keys(state.months).forEach(function (k) {
+      (state.months[k].settings.products || []).forEach(function (p) {
+        var n = parseInt(String(p.id).replace(/\D/g, ""), 10); if (isFinite(n) && n > max) max = n;
+      });
+    });
+    pidSeq = max;
+  }
+  function defaultExpenses() { return { shopify: "130", fixedOther: "0", ads: "1500", feePct: "2.9" }; }
+  function defaultProducts() { return [{ id: "p1", name: "מוצר קלאסי", cost: "45" }, { id: "p2", name: "מוצר פרימיום", cost: "70" }]; }
+  function defaultRows() {
+    return [
+      { desc: "מכירה רגילה", productId: "p1", qty: 1, price: 149, orders: 18 },
+      { desc: "מכירה רגילה", productId: "p2", qty: 1, price: 199, orders: 9 },
+      { desc: "מבצע 2 יחידות", productId: "p1", qty: 2, price: 249, orders: 6 },
+      { desc: "מבצע 3 יחידות", productId: "p1", qty: 3, price: 339, orders: 3 }
+    ];
+  }
+  function defaultSettings() { var s = defaultExpenses(); s.products = defaultProducts(); return s; }
+
+  // ---------- pure calc ----------
+  function calcTotals(s, rowsArr) {
+    var map = {}; (s.products || []).forEach(function (p) { map[p.id] = num(p.cost); });
+    var revenue = 0, cogs = 0, orders = 0, units = 0;
+    rowsArr.forEach(function (r) {
+      revenue += num(r.price) * num(r.orders);
+      cogs += (map[r.productId] || 0) * num(r.qty) * num(r.orders);
+      orders += num(r.orders);
+      units += num(r.qty) * num(r.orders);
+    });
+    var fees = revenue * (num(s.feePct) / 100);
+    var ads = num(s.ads);
+    var fixed = num(s.shopify) + num(s.fixedOther);
+    var expenses = cogs + fees + ads + fixed;
+    var profit = revenue - expenses;
+    return {
+      revenue: revenue, cogs: cogs, fees: fees, ads: ads, fixed: fixed, expenses: expenses, profit: profit,
+      orders: orders, units: units,
+      margin: revenue > 0 ? profit / revenue * 100 : 0,
+      perOrder: orders > 0 ? profit / orders : 0,
+      aov: orders > 0 ? revenue / orders : 0,
+      roas: ads > 0 ? revenue / ads : 0
+    };
+  }
+
+  // ---------- product catalog (DOM) ----------
+  function makeProduct(p) {
+    p = p || { id: newPid(), name: "", cost: 0 };
+    var row = document.createElement("div"); row.className = "prod-row";
+    var dot = document.createElement("span"); dot.className = "prod-dot";
+    var name = document.createElement("input"); name.type = "text"; name.className = "pname"; name.placeholder = "שם המוצר"; name.value = p.name || "";
+    var costWrap = document.createElement("div"); costWrap.className = "input-money sm";
+    var cost = document.createElement("input"); cost.type = "number"; cost.min = "0"; cost.step = "0.5"; cost.value = p.cost; cost.title = "עלות ליחידה";
+    costWrap.appendChild(cost);
+    var del = document.createElement("button"); del.className = "prod-del"; del.textContent = "✕"; del.title = "מחק מוצר";
+    del.addEventListener("click", function () {
+      if (els.productList.children.length <= 1) { alert("חייב להישאר לפחות מוצר אחד."); return; }
+      row.parentNode.removeChild(row); onCatalogEdit();
+    });
+    name.addEventListener("input", onCatalogEdit);
+    cost.addEventListener("input", onCatalogEdit);
+    row.append(dot, name, costWrap, del);
+    row._pref = { id: p.id, name: name, cost: cost, dot: dot };
+    els.productList.appendChild(row);
+    return row;
+  }
+  function getProductsFromDOM() {
+    var out = [];
+    Array.prototype.forEach.call(els.productList.children, function (row) {
+      out.push({ id: row._pref.id, name: row._pref.name.value, cost: num(row._pref.cost.value) });
+    });
+    return out;
+  }
+  function refreshProductColors() {
+    Array.prototype.forEach.call(els.productList.children, function (row, i) {
+      row._pref.dot.style.background = PALETTE[i % PALETTE.length];
+    });
+  }
+  function firstPid() { var p = getProductsFromDOM(); return p.length ? p[0].id : ""; }
+
+  // ---------- sales rows (DOM) ----------
+  function fillOptions(sel, wantId) {
+    var prods = getProductsFromDOM();
+    var cur = (wantId != null) ? wantId : sel.value;
+    var ids = prods.map(function (p) { return p.id; });
+    if (ids.indexOf(cur) === -1) cur = prods.length ? prods[0].id : "";
+    sel.innerHTML = "";
+    prods.forEach(function (p) {
+      var o = document.createElement("option"); o.value = p.id; o.textContent = p.name || "(מוצר ללא שם)";
+      if (p.id === cur) o.selected = true; sel.appendChild(o);
+    });
+  }
+  function makeRow(data) {
+    data = data || { desc: "", productId: firstPid(), qty: 1, price: 0, orders: 0 };
+    var tr = document.createElement("tr");
+    function inp(cls, val, attrs) {
+      var i = document.createElement("input");
+      i.type = attrs.type || "number";
+      if (i.type === "number") { i.min = "0"; i.step = attrs.step || "1"; }
+      i.className = cls; i.value = val; if (attrs.ph) i.placeholder = attrs.ph;
+      i.addEventListener("input", onEdit); return i;
+    }
+    var tdDesc = document.createElement("td"); tdDesc.className = "desc-col";
+    var iDesc = inp("desc", data.desc, { type: "text", ph: "לדוגמה: מכירה רגילה" }); tdDesc.appendChild(iDesc);
+
+    var tdProd = document.createElement("td");
+    var sel = document.createElement("select"); sel.className = "prod-select";
+    fillOptions(sel, data.productId); sel.addEventListener("change", onEdit); tdProd.appendChild(sel);
+
+    var tdQty = document.createElement("td"); var iQty = inp("", data.qty, {}); tdQty.appendChild(iQty);
+    var tdP = document.createElement("td"); var iP = inp("", data.price, { step: "1" }); tdP.appendChild(iP);
+    var tdO = document.createElement("td"); var iO = inp("", data.orders, {}); tdO.appendChild(iO);
+    var tdRev = document.createElement("td"); tdRev.className = "cell-calc";
+    var tdProf = document.createElement("td"); tdProf.className = "cell-calc";
+    var tdDel = document.createElement("td");
+    var del = document.createElement("button"); del.className = "row-del"; del.textContent = "✕"; del.title = "מחק שורה";
+    del.addEventListener("click", function () { tr.parentNode.removeChild(tr); onEdit(); });
+    tdDel.appendChild(del);
+
+    tr.append(tdDesc, tdProd, tdQty, tdP, tdO, tdRev, tdProf, tdDel);
+    tr._refs = { desc: iDesc, prod: sel, qty: iQty, price: iP, orders: iO, rev: tdRev, prof: tdProf };
+    els.salesBody.appendChild(tr);
+    return tr;
+  }
+  function refreshProductSelects() {
+    Array.prototype.forEach.call(els.salesBody.children, function (tr) {
+      fillOptions(tr._refs.prod, tr._refs.prod.value);
+    });
+  }
+
+  // ---------- read active from DOM ----------
+  function readActive() {
+    var s = {};
+    EXP_IDS.forEach(function (id) { s[id] = els[id].value; });
+    s.products = getProductsFromDOM();
+    var rowsArr = [];
+    Array.prototype.forEach.call(els.salesBody.children, function (tr) {
+      var r = tr._refs;
+      rowsArr.push({ desc: r.desc.value, productId: r.prod.value, qty: num(r.qty.value), price: num(r.price.value), orders: num(r.orders.value) });
+    });
+    state.months[state.current] = { settings: s, rows: rowsArr };
+  }
+
+  // ---------- load active into DOM ----------
+  function loadActiveIntoDOM() {
+    var m = state.months[state.current];
+    EXP_IDS.forEach(function (id) { els[id].value = (m.settings[id] != null ? m.settings[id] : ""); });
+    els.productList.innerHTML = "";
+    (m.settings.products && m.settings.products.length ? m.settings.products : defaultProducts()).forEach(function (p) { makeProduct(p); });
+    refreshProductColors();
+    els.salesBody.innerHTML = "";
+    m.rows.forEach(function (r) { makeRow(r); });
+  }
+
+  // ---------- render outputs ----------
+  function renderActive() {
+    var m = state.months[state.current];
+    var s = m.settings;
+    var t = calcTotals(s, m.rows);
+    var map = {}; getProductsFromDOM().forEach(function (p) { map[p.id] = p.cost; });
+
+    Array.prototype.forEach.call(els.salesBody.children, function (tr) {
+      var r = tr._refs;
+      var lineRev = num(r.price.value) * num(r.orders.value);
+      var lineCost = (map[r.prod.value] || 0) * num(r.qty.value) * num(r.orders.value);
+      var lineProfit = lineRev - lineCost;
+      r.rev.textContent = nis(lineRev);
+      r.prof.textContent = nis(lineProfit);
+      r.prof.classList.toggle("pos", lineProfit > 0);
+      r.prof.classList.toggle("neg", lineProfit < 0);
+    });
+
+    els.salesMonthLbl.textContent = monthLabel(state.current);
+    els.kpiRevenue.textContent = nis(t.revenue);
+    els.kpiOrders.textContent = t.orders.toLocaleString("he-IL") + " הזמנות · " + nis(t.aov) + " ממוצע";
+    els.kpiExpenses.textContent = nis(t.expenses);
+    els.kpiUnits.textContent = t.units.toLocaleString("he-IL") + " יחידות נמכרו";
+    els.kpiProfit.textContent = nis(t.profit);
+    els.kpiProfit.classList.toggle("pos", t.profit > 0);
+    els.kpiProfit.classList.toggle("neg", t.profit < 0);
+    els.kpiPerOrder.textContent = nis(t.perOrder) + " רווח להזמנה";
+    els.kpiMargin.textContent = (t.revenue > 0 ? t.margin.toFixed(1) : "0") + "%";
+    els.kpiMargin.classList.toggle("pos", t.profit > 0 && t.revenue > 0);
+    els.kpiMargin.classList.toggle("neg", t.profit < 0);
+    els.kpiRoas.textContent = "ROAS: " + (t.ads > 0 ? t.roas.toFixed(2) + "×" : "—");
+    els.profitCard.classList.toggle("pos", t.profit > 0);
+    els.profitCard.classList.toggle("neg", t.profit < 0);
+
+    var b = els.breakdown; b.innerHTML = "";
+    if (m.rows.length === 0) {
+      b.innerHTML = '<div class="empty">אין עדיין שורות מכירה בחודש זה. הוסיפו שורה כדי להתחיל.</div>';
+      els.miniKpis.innerHTML = "";
+    } else {
+      b.appendChild(brk("income", "הכנסות ממכירות", t.orders + " הזמנות", t.revenue));
+      b.appendChild(brk("cost", "עלות מוצרים לספק", "COGS · " + t.units + " יח'", -t.cogs));
+      b.appendChild(brk("cost", "עמלות סליקה", s.feePct + "% מההכנסה", -t.fees));
+      b.appendChild(brk("cost", "פרסום Meta Ads", "", -t.ads));
+      b.appendChild(brk("cost", "הוצאות קבועות", "Shopify + נוספות", -t.fixed));
+      b.appendChild(brk("total", "רווח נקי", "", t.profit, true));
+      var mk = els.miniKpis; mk.innerHTML = "";
+      mk.appendChild(mini("שולי רווח", (t.revenue > 0 ? t.margin.toFixed(1) : "0") + "%", t.profit));
+      mk.appendChild(mini("החזר על פרסום (ROAS)", t.ads > 0 ? t.roas.toFixed(2) + "×" : "—", t.roas >= 1 ? 1 : (t.ads > 0 ? -1 : 0)));
+      mk.appendChild(mini("רווח ליחידה", nis(t.units > 0 ? t.profit / t.units : 0), t.profit));
+    }
+
+    var grossPerUnit = t.units > 0 ? (t.revenue - t.cogs - t.fees) / t.units : 0;
+    var overhead = t.ads + t.fixed;
+    var note = els.breakEvenNote;
+    if (t.units === 0 || grossPerUnit <= 0) {
+      note.textContent = "הזינו מכירות כדי לראות כמה יחידות צריך למכור כדי לכסות את הפרסום וההוצאות הקבועות.";
+    } else {
+      var beUnits = Math.ceil(overhead / grossPerUnit);
+      var moreNeeded = Math.max(0, beUnits - t.units);
+      note.innerHTML = "נקודת איזון: צריך למכור כ־<b>" + beUnits.toLocaleString("he-IL") +
+        " יחידות</b> כדי לכסות פרסום והוצאות קבועות (" + nis(overhead) + "). " +
+        (t.profit >= 0 ? "החודש אתם מעל נקודת האיזון ברווח. 🎉"
+                       : "חסרות עוד כ־<b>" + moreNeeded.toLocaleString("he-IL") + " יחידות</b> כדי להגיע לאיזון.");
+    }
+  }
+
+  function renderSummary() {
+    var keys = sortedKeys();
+    var wrap = els.summaryScroll; wrap.innerHTML = "";
+    var sumRev = 0, sumProfit = 0;
+    keys.forEach(function (k) {
+      var m = state.months[k];
+      var t = calcTotals(m.settings, m.rows);
+      sumRev += t.revenue; sumProfit += t.profit;
+      var card = document.createElement("div");
+      card.className = "month-card" + (k === state.current ? " active" : "");
+      card.innerHTML =
+        '<div class="mc-name">' + monthLabel(k) + "</div>" +
+        '<div class="mc-profit ' + (t.profit > 0 ? "pos" : (t.profit < 0 ? "neg" : "")) + '">' + nis(t.profit) + "</div>" +
+        '<div class="mc-sub">' + nis(t.revenue) + " הכנסות</div>";
+      card.addEventListener("click", function () { if (k !== state.current) switchMonth(k); });
+      wrap.appendChild(card);
+    });
+    if (keys.length > 1) {
+      var tot = document.createElement("div"); tot.className = "month-card totals";
+      tot.innerHTML =
+        '<div class="mc-name">סה״כ ' + keys.length + " חודשים</div>" +
+        '<div class="mc-profit ' + (sumProfit > 0 ? "pos" : (sumProfit < 0 ? "neg" : "")) + '">' + nis(sumProfit) + "</div>" +
+        '<div class="mc-sub">' + nis(sumRev) + " הכנסות</div>";
+      wrap.appendChild(tot);
+    }
+  }
+
+  function renderMonthSelect() {
+    var keys = sortedKeys();
+    els.monthSelect.innerHTML = "";
+    keys.forEach(function (k) {
+      var o = document.createElement("option"); o.value = k; o.textContent = monthLabel(k);
+      if (k === state.current) o.selected = true; els.monthSelect.appendChild(o);
+    });
+    var idx = keys.indexOf(state.current);
+    els.prevMonth.disabled = idx <= 0;
+    els.nextMonth.disabled = idx === -1 || idx >= keys.length - 1;
+    els.delMonthBtn.disabled = keys.length <= 1;
+    els.delMonthBtn.style.opacity = keys.length <= 1 ? ".4" : "1";
+  }
+
+  function brk(cls, lbl, small, val, isTotal) {
+    var d = document.createElement("div"); d.className = "brk-row " + cls;
+    var l = document.createElement("div"); l.className = "lbl";
+    l.innerHTML = lbl + (small ? ' <small>' + small + "</small>" : "");
+    var n = document.createElement("div"); n.className = "num"; n.textContent = nis(val);
+    if (isTotal) n.style.color = val >= 0 ? "var(--good)" : "var(--bad)";
+    d.append(l, n); return d;
+  }
+  function mini(lbl, valText, sign) {
+    var d = document.createElement("div"); d.className = "mini";
+    var l = document.createElement("div"); l.className = "label"; l.textContent = lbl;
+    var v = document.createElement("div"); v.className = "val"; v.textContent = valText;
+    if (sign > 0) v.style.color = "var(--good)"; else if (sign < 0) v.style.color = "var(--bad)";
+    d.append(l, v); return d;
+  }
+
+  // ---------- edit handlers ----------
+  function onEdit() { readActive(); renderActive(); renderSummary(); save(); }
+  function onCatalogEdit() { refreshProductColors(); refreshProductSelects(); readActive(); renderActive(); renderSummary(); save(); }
+
+  // ---------- month ops ----------
+  function switchMonth(key) {
+    readActive(); state.current = key;
+    loadActiveIntoDOM(); renderActive(); renderSummary(); renderMonthSelect(); save();
+  }
+  function addMonth(key) {
+    if (!key) return;
+    if (state.months[key]) { switchMonth(key); return; }
+    readActive();
+    var carry = state.months[state.current];
+    var s = {};
+    EXP_IDS.forEach(function (id) { s[id] = carry ? carry.settings[id] : defaultExpenses()[id]; });
+    s.products = (carry ? carry.settings.products : defaultProducts()).map(function (p) { return { id: p.id, name: p.name, cost: p.cost }; });
+    state.months[key] = { settings: s, rows: [] };
+    switchMonth(key);
+  }
+  function deleteMonth() {
+    var keys = sortedKeys();
+    if (keys.length <= 1) return;
+    if (!confirm("למחוק את החודש " + monthLabel(state.current) + " וכל הנתונים שבו?")) return;
+    delete state.months[state.current];
+    var rem = sortedKeys(); state.current = rem[rem.length - 1];
+    loadActiveIntoDOM(); renderActive(); renderSummary(); renderMonthSelect(); save();
+  }
+
+  // ---------- persistence ----------
+  function save() { state.theme = document.documentElement.getAttribute("data-theme") || ""; try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {} }
+
+  function load() {
+    var raw = null;
+    try { raw = localStorage.getItem(STORE_KEY); } catch (e) {}
+    if (raw) {
+      try {
+        var d = JSON.parse(raw);
+        if (d && d.months && Object.keys(d.months).length) {
+          state = d;
+          if (!state.months[state.current]) state.current = sortedKeys()[0];
+          if (state.theme) applyTheme(state.theme);
+          ensurePidSeq(); return;
+        }
+      } catch (e) {}
+    }
+    if (migrateOld()) { ensurePidSeq(); return; }
+    var k = curMonthKey();
+    state = { months: {}, current: k, theme: "" };
+    state.months[k] = { settings: defaultSettings(), rows: defaultRows() };
+    ensurePidSeq();
+  }
+
+  function migrateOld() {
+    for (var i = 0; i < OLD_KEYS.length; i++) {
+      var raw = null; try { raw = localStorage.getItem(OLD_KEYS[i]); } catch (e) {}
+      if (!raw) continue;
+      try {
+        var d = JSON.parse(raw);
+        var months = {};
+        var srcMonths, cur, theme;
+        if (d.months) { srcMonths = d.months; cur = d.current; theme = d.theme; }
+        else { srcMonths = {}; srcMonths[curMonthKey()] = { settings: d.settings, rows: d.rows }; cur = curMonthKey(); theme = d.theme; }
+        Object.keys(srcMonths).forEach(function (mk) {
+          var mm = srcMonths[mk]; var os = mm.settings || {};
+          var products = [
+            { id: "p1", name: os.colorAName || "מוצר 1", cost: os.costA != null ? os.costA : "0" },
+            { id: "p2", name: os.colorBName || "מוצר 2", cost: os.costB != null ? os.costB : "0" }
+          ];
+          var settings = { shopify: os.shopify || "0", fixedOther: os.fixedOther || "0", ads: os.ads || "0", feePct: os.feePct || "0", products: products };
+          var rows = [];
+          (mm.rows || []).forEach(function (r) {
+            var a = num(r.a), b = num(r.b);
+            if (a > 0 && b > 0) rows.push({ desc: (r.desc ? r.desc + " " : "") + "(מעורב)", productId: "p1", qty: a + b, price: num(r.price), orders: num(r.orders) });
+            else if (b > 0) rows.push({ desc: r.desc || "", productId: "p2", qty: b, price: num(r.price), orders: num(r.orders) });
+            else rows.push({ desc: r.desc || "", productId: "p1", qty: a, price: num(r.price), orders: num(r.orders) });
+          });
+          months[mk] = { settings: settings, rows: rows };
+        });
+        if (!Object.keys(months).length) return false;
+        state = { months: months, current: months[cur] ? cur : Object.keys(months).sort()[0], theme: theme || "" };
+        if (state.theme) applyTheme(state.theme);
+        save();
+        return true;
+      } catch (e) {}
+    }
+    return false;
+  }
+
+  // ---------- theme ----------
+  function applyTheme(t) {
+    if (t) document.documentElement.setAttribute("data-theme", t);
+    else document.documentElement.removeAttribute("data-theme");
+    var dark = t === "dark" || (t === "" && matchMedia("(prefers-color-scheme: dark)").matches);
+    var btn = document.getElementById("themeBtn");
+    if (btn) btn.innerHTML = dark ? "☀️ <span>בהיר</span>" : "🌙 <span>כהה</span>";
+  }
+
+  // ---------- wire up ----------
+  EXP_IDS.forEach(function (id) { els[id].addEventListener("input", onEdit); });
+  els.addProductBtn.addEventListener("click", function () { makeProduct(); onCatalogEdit(); });
+  document.getElementById("addRow").addEventListener("click", function () { makeRow(); onEdit(); });
+  Array.prototype.forEach.call(document.querySelectorAll(".chip"), function (c) {
+    c.addEventListener("click", function () {
+      var q = parseInt(c.getAttribute("data-qty"), 10);
+      var desc = q === 1 ? "יחידה בודדת" : "מבצע " + q + " יחידות";
+      makeRow({ desc: desc, productId: firstPid(), qty: q, price: 0, orders: 0 }); onEdit();
+    });
+  });
+  els.monthSelect.addEventListener("change", function () { switchMonth(els.monthSelect.value); });
+  els.prevMonth.addEventListener("click", function () { var keys = sortedKeys(), i = keys.indexOf(state.current); if (i > 0) switchMonth(keys[i - 1]); });
+  els.nextMonth.addEventListener("click", function () { var keys = sortedKeys(), i = keys.indexOf(state.current); if (i < keys.length - 1) switchMonth(keys[i + 1]); });
+  els.addMonthBtn.addEventListener("click", function () { addMonth(els.newMonthInput.value || curMonthKey()); });
+  els.delMonthBtn.addEventListener("click", deleteMonth);
+  document.getElementById("themeBtn").addEventListener("click", function () {
+    var cur = document.documentElement.getAttribute("data-theme");
+    var dark = cur ? cur === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    applyTheme(dark ? "light" : "dark"); save();
+  });
+  document.getElementById("resetBtn").addEventListener("click", function () {
+    if (!confirm("לאפס את כל הנתונים בכל החודשים ולחזור לברירת המחדל?")) return;
+    try { localStorage.removeItem(STORE_KEY); OLD_KEYS.forEach(function (k) { localStorage.removeItem(k); }); } catch (e) {}
+    location.reload();
+  });
+
+  // ---------- init ----------
+  load();
+  els.newMonthInput.value = curMonthKey();
+  loadActiveIntoDOM();
+  renderActive();
+  renderSummary();
+  renderMonthSelect();
+})();
+</script>
